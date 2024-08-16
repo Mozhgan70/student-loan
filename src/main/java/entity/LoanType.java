@@ -1,0 +1,53 @@
+package entity;
+
+
+import entity.enumration.EducationGrade;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import jakarta.persistence.*;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Set;
+
+
+@Entity
+@Table(
+        name = "LoanCondition"
+)
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+@SuperBuilder
+public class LoanType {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Enumerated(value =EnumType.STRING)
+    @Column(name="loan_type")
+    private entity.enumration.LoanType loanType;
+
+    @Enumerated(value =EnumType.STRING)
+    @Column(name="education_grade")
+    private EducationGrade educationGrade;
+
+    @Column(name="amount")
+    private BigDecimal amount;
+
+    @Column(name="startDate")
+    private Date startDate;
+
+    @Column(name="endDate")
+    private Date endDate;
+
+    @OneToMany(mappedBy = "loanType")
+    private Set<Loan> loan;
+
+
+}

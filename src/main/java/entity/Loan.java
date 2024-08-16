@@ -1,0 +1,61 @@
+package entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Set;
+
+
+@Entity
+@Table(
+        name = "Loan"
+)
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+@SuperBuilder
+public class Loan {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name="loan_id")
+    private LoanType loanType;
+
+    @ManyToOne
+    @JoinColumn(name="student_id")
+    private Student student;
+
+    @OneToMany(mappedBy = "loan")
+    private Set<Installment> installments;
+
+
+    @Column(name="payment_date")
+    private Date paymentDate;
+
+    @Column(name="end_loan")
+    private Date endLoan;
+
+    @Column(name="start_installments")
+    private Date startInstallments;
+
+    @Column(name="installments_count")
+    private Integer installmentsCount;
+
+    @Column(name="remain_loan_amount")
+    private BigDecimal remainLoanAmount;
+
+    @Column(name="number_of_paid")
+    private Integer numberOfPaid;
+
+    @Column(name="number_of_unPaid")
+    private Integer numberOfUnPaid;
+
+}
