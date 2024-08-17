@@ -26,14 +26,14 @@ public class Loan {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="loan_id")
+    @JoinColumn(name="loanType_id")
     private LoanType loanType;
 
     @ManyToOne
     @JoinColumn(name="student_id")
     private Student student;
 
-    @OneToMany(mappedBy = "loan")
+    @OneToMany(mappedBy = "loan",cascade = CascadeType.ALL)
     private Set<Installment> installments;
 
 

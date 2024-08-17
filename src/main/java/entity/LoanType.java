@@ -15,7 +15,7 @@ import java.util.Set;
 
 @Entity
 @Table(
-        name = "LoanCondition"
+        name = "LoanType"
 )
 @Setter
 @Getter
@@ -46,7 +46,7 @@ public class LoanType {
     @Column(name="endDate")
     private Date endDate;
 
-    @OneToMany(mappedBy = "loanType")
+    @OneToMany(mappedBy = "loanType",cascade = CascadeType.ALL)
     private Set<Loan> loan;
 
 
