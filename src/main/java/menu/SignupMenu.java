@@ -1,4 +1,5 @@
 package menu;
+import dto.RegisterStudentParam;
 import entity.enumration.EducationGrade;
 import entity.enumration.MaritalStatus;
 import entity.enumration.UniversityType;
@@ -89,8 +90,6 @@ public class SignupMenu {
         }
     }
 
-
-
     public void registerStudent() {
         System.out.println(MESSAGE.getInputMessage("First Name"));
         String name = INPUT.scanner.next();
@@ -121,10 +120,24 @@ public class SignupMenu {
         System.out.println("1.Yes");
         System.out.println("2.No");
         int choice = INPUT.scanner.nextInt();
-        if (choice == 1) {boolean isDormitoryResident=true;}
-        else if (choice == 2) {boolean isDormitoryResident=false;}
-
-
+        boolean isDormitoryResident=false;
+        if (choice == 1) { isDormitoryResident=true;}
+        else if (choice == 2) { isDormitoryResident=false;}
+        RegisterStudentParam param=new RegisterStudentParam(
+                name,
+                lastName,
+                fatherName,
+                motherName,
+                idNumber,
+                nationalCode,
+                birthDate,
+                studentNumber,
+                universityName,
+                universityType,
+                entryYear,
+                educationGrade,
+                maritalStatus,
+                isDormitoryResident);
 
     }
 }

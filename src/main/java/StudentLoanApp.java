@@ -7,11 +7,11 @@ public class StudentLoanApp {
 
 
     public static void main(String[] args) {
-        EntityManagerFactory emf= Persistence.createEntityManagerFactory("default");
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        em.getTransaction().commit();
-      //  ApplicationContext.getInstance().getMenu().show();
+//        EntityManagerFactory emf= Persistence.createEntityManagerFactory("default");
+//        EntityManager em = emf.createEntityManager();
+//        em.getTransaction().begin();
+//        em.getTransaction().commit();
+        ApplicationContext.getInstance().getMenu().show();
 
     }
 }
