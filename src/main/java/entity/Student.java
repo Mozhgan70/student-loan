@@ -10,6 +10,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 @Entity
@@ -128,7 +129,7 @@ public class Student {
     private boolean canReceiveHousingLoan;
 
     @PostLoad
-    @PostPersist
+   // @PostPersist
     @PostUpdate
     private void calculateCanReceiveHousingLoan() {
         this.canReceiveHousingLoan =
@@ -137,5 +138,33 @@ public class Student {
                         (this.spouse != null || this.id < this.spouse.getId());
     }
 
+    @PostPersist
+    protected void generateUsernameAndPassword() {
+
+        this.userName = this.nationalCode;
+        this.password = generatePassword();
+
+
+    }
+
+    public String generatePassword()
+    {
+        String upperCaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lowerCaseChars = "abcdefghijklmnopqrstuvwxyz";
+        String digitChars = "0123456789";
+        String specialChars = "@#$%&";
+        String allTypeOfChars = upperCaseChars + lowerCaseChars + digitChars + specialChars;
+        StringBuilder complexPass = new StringBuilder();
+        Random random = new Random();
+        complexPass.append(upperCaseChars.charAt(random.nextInt(upperCaseChars.length())));
+        complexPass.append(lowerCaseChars.charAt(random.nextInt(lowerCaseChars.length())));
+        complexPass.append(digitChars.charAt(random.nextInt(digitChars.length())));
+        complexPass.append(specialChars.charAt(random.nextInt(specialChars.length())));
+        for (int i = 0; i < 4; i++) {
+            complexPass.append(allTypeOfChars.charAt(random.nextInt(allTypeOfChars.length())));
+        }
+
+        return complexPass.toString();
+    }
 
 }

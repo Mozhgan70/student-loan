@@ -1,6 +1,6 @@
 package util;
 
-public class AuthHolder {
+public class  AuthHolder {
 
     private Integer tokenId;
     private String tokenName;

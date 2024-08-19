@@ -7,8 +7,9 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface StudentMapper {
-    StudentMapper INSTANCE = Mappers.getMapper(StudentMapper.class);
+    //StudentMapper INSTANCE = Mappers.getMapper(StudentMapper.class);
 
     RegisterStudentParam toDTO(Student student);
+
     Student toEntity(RegisterStudentParam studentDTO);
 }

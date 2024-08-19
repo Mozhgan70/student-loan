@@ -2,12 +2,13 @@ package entity.enumration;
 
 public enum UniversityType {
 
+    Rozane("روزانه"),
     SHABANEH("شبانه"),
-    NON_PROFIT_UNIVERSITY("دانشگاه‌های غیرانتفاعی"),
+    GHEIRE_ENTEFAEI("دانشگاه‌های غیرانتفاعی"),
     PARDIS("پردیس"),
-    EXCESS_CAPACITY("ظرفیت مازاد"),
+    ZARFIAT_MAZAD("ظرفیت مازاد"),
     PAYAM_NOOR("پیام نور"),
-    APPLIED_SCIENCE("علمی کاربردی"),
+    ELMI_KARBORDI("علمی کاربردی"),
     AZAD_UNIVERSITY("دانشگاه آزاد");
 
     private final String persianName;

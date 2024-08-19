@@ -1,10 +1,12 @@
 package menu;
 import dto.RegisterStudentParam;
+import entity.Student;
 import entity.enumration.EducationGrade;
 import entity.enumration.MaritalStatus;
 import entity.enumration.UniversityType;
 import menu.util.Input;
 import menu.util.Message;
+import service.StudentService;
 import util.jalaliCalender.JalaliDate;
 import util.jalaliCalender.JalaliDateUtil;
 
@@ -18,14 +20,16 @@ public class SignupMenu {
 
     private final Input INPUT;
     private final Message MESSAGE;
+    private final StudentService STUDENT_SERVICE;
 
 
 
-    public SignupMenu(Input INPUT, Message MESSAGE) {
+    public SignupMenu(Input INPUT, Message MESSAGE, StudentService studentService) {
         this.INPUT = INPUT;
         this.MESSAGE = MESSAGE;
 
 
+        STUDENT_SERVICE = studentService;
     }
 
     public void show(){
@@ -69,8 +73,6 @@ public class SignupMenu {
             return null;
         }
     }
-
-
 
 
     public  <T extends Enum<T>> T getEnumChoice(Class<T> enumClass) {
@@ -123,7 +125,8 @@ public class SignupMenu {
         boolean isDormitoryResident=false;
         if (choice == 1) { isDormitoryResident=true;}
         else if (choice == 2) { isDormitoryResident=false;}
-        RegisterStudentParam param=new RegisterStudentParam(
+
+        RegisterStudentParam studentParam=new RegisterStudentParam(
                 name,
                 lastName,
                 fatherName,
@@ -138,6 +141,15 @@ public class SignupMenu {
                 educationGrade,
                 maritalStatus,
                 isDormitoryResident);
+
+        Student student = STUDENT_SERVICE.registerStudent(studentParam);
+        if(student!=null){
+            System.out.println("Student is registered");
+        }
+        else{
+
+            System.out.println("Student is already exist");
+        }
 
     }
 }
