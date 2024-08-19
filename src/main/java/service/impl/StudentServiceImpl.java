@@ -25,6 +25,20 @@ public class StudentServiceImpl implements StudentService {
         }
        return null;
     }
+
+    @Override
+    public Student findByUsernameAndPassword(String username, String password) {
+        return studentRepository.findByUsernameAndPassword(username,password);
+    }
+
+    @Override
+    public boolean login(String username, String password) {
+        Student byUsernameAndPassword = findByUsernameAndPassword(username, password);
+        if (byUsernameAndPassword != null) {
+            return true;
+        }
+        return false;
+    }
 }
 //    @Override
 //    public String generatePassword() {

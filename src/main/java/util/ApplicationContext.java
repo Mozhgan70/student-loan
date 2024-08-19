@@ -60,7 +60,7 @@ public class ApplicationContext {
         RegisterLoanMenu registerLoanMenu=new RegisterLoanMenu(input,message);
         PaymentMenu paymentMenu=new PaymentMenu(input,message);
         LoginSubmenu loginSubmenu=new LoginSubmenu(input,message,registerLoanMenu,paymentMenu);
-        LoginMenu loginMenu=new LoginMenu(input,message,loginSubmenu,authHolder);
+        LoginMenu loginMenu=new LoginMenu(input,message,loginSubmenu,authHolder,studentService);
         menu = new Menu(input,message,signupMenu,loginMenu);
     }
 
