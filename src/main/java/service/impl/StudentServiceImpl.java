@@ -5,14 +5,16 @@ import dto.mapStruct.StudentMapper;
 import entity.Student;
 import repository.StudentRepository;
 import service.StudentService;
+import util.UserSession;
 
 public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
-
-    public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper) {
+    private final UserSession userSession;
+    public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper, UserSession userSession) {
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;
+        this.userSession = userSession;
     }
 
 
@@ -24,6 +26,21 @@ public class StudentServiceImpl implements StudentService {
 
         }
        return null;
+    }
+
+    @Override
+    public boolean login(String username, String password) {
+        Student student = studentRepository.findByUsernameAndPassword(username, password);
+        if (student != null) {
+            userSession.setTokenId(student.getId());
+            userSession.setTokenName(student.getUserName());
+            userSession.setEducationGrade(student.getEducationGrade());
+            userSession.setMaritalStatus(student.getMaritalStatus());
+            userSession.setCity(student.getResidenceCity());
+            return true;
+        }
+        return false;
+
     }
 }
 //    @Override

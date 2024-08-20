@@ -1,6 +1,7 @@
 package menu;
 import dto.RegisterStudentParam;
 import entity.Student;
+import entity.enumration.City;
 import entity.enumration.EducationGrade;
 import entity.enumration.MaritalStatus;
 import entity.enumration.UniversityType;
@@ -113,6 +114,7 @@ public class SignupMenu {
         System.out.println(MESSAGE.getInputMessage("University Name"));
         String universityName= INPUT.scanner.next();
         UniversityType universityType = getEnumChoice(UniversityType.class);
+        City city = getEnumChoice(City.class);
         System.out.println(MESSAGE.getInputMessage("Entry Year In This Format YYYY/MM/DD For Example 1403/05/28"));
         String persianEntryYear= INPUT.scanner.next();
         Date entryYear = convertPersianDateToDate(persianEntryYear);
@@ -140,6 +142,7 @@ public class SignupMenu {
                 entryYear,
                 educationGrade,
                 maritalStatus,
+                city,
                 isDormitoryResident);
 
         Student student = STUDENT_SERVICE.registerStudent(studentParam);
