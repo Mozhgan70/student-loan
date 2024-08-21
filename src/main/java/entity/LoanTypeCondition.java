@@ -15,7 +15,7 @@ import java.util.Set;
 
 @Entity
 @Table(
-        name = "LoanType"
+        name = "LoanType_Condition"
 )
 @Setter
 @Getter
@@ -23,7 +23,7 @@ import java.util.Set;
 @AllArgsConstructor
 @ToString
 @SuperBuilder
-public class LoanType {
+public class LoanTypeCondition {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +39,9 @@ public class LoanType {
 
     @Column(name="amount")
     private BigDecimal amount;
+
+    @Column(name="city")
+    private String city;
 
     @Column(name="startDate")
     private Date startDate;

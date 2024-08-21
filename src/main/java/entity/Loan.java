@@ -27,7 +27,7 @@ public class Loan {
 
     @ManyToOne
     @JoinColumn(name="loanType_id")
-    private LoanType loanType;
+    private LoanTypeCondition loanType;
 
     @ManyToOne
     @JoinColumn(name="student_id")
@@ -40,8 +40,8 @@ public class Loan {
     @Column(name="payment_date")
     private Date paymentDate;
 
-    @Column(name="end_loan")
-    private Date endLoan;
+    @Column(name="registerLoan_date")
+    private Date registerLoanDate;
 
     @Column(name="start_installments")
     private Date startInstallments;
