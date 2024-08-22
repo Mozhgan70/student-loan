@@ -7,4 +7,5 @@ public interface StudentRepository {
     boolean existsByNationalCode(String userName);
     Student login(String userName, String password);
     Student findByUsernameAndPassword(String username, String password);
+
 }

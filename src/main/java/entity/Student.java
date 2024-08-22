@@ -1,5 +1,6 @@
 package entity;
 
+import entity.enumration.City;
 import entity.enumration.EducationGrade;
 import entity.enumration.MaritalStatus;
 import entity.enumration.UniversityType;
@@ -106,6 +107,12 @@ public class Student {
 
     @Column(name="password")
     private String password;
+
+    @Column(name="residence_city")
+    private City residenceCity;
+
+    @Column(name="address")
+    private String address;
 
 
     @NotNull(message = "University type cannot be null")

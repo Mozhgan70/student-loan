@@ -4,24 +4,22 @@ import menu.util.Input;
 import menu.util.Message;
 
 import service.StudentService;
-import util.AuthHolder;
-
-import java.sql.SQLException;
+import util.UserSession;
 
 public class LoginMenu {
 
     private final Input INPUT;
     private final Message MESSAGE;
     private final LoginSubmenu LOGIN_SUBMENU;
-    private final AuthHolder authHolder;
+    private final UserSession USER_SESSION;
     private final StudentService STUDENT_SERVICE;
 
     public LoginMenu(Input INPUT, Message MESSAGE, LoginSubmenu loginSubmenu
-            , AuthHolder authHolder, StudentService studentService) {
+            , UserSession userSession, StudentService studentService) {
         this.INPUT = INPUT;
         this.MESSAGE = MESSAGE;
         this.LOGIN_SUBMENU = loginSubmenu;
-        this.authHolder = authHolder;
+        this.USER_SESSION = userSession;
         STUDENT_SERVICE = studentService;
     }
 
@@ -34,11 +32,14 @@ public class LoginMenu {
                     """);
             switch (INPUT.scanner.next()) {
                 case "1": {
-                    login();
-                    System.out.println(MESSAGE.getInvalidInputMessage());
-                    break;
+
+                    getLogin();
+                    USER_SESSION.reset();
+                    break LoginMenu;
+
                 }
                 case "2": {
+
                     break LoginMenu;
                 }
                 default:
@@ -50,17 +51,17 @@ public class LoginMenu {
 
     }
 
-    private void login() {
+    private void getLogin() {
         System.out.println(MESSAGE.getInputMessage("userName"));
         String username = INPUT.scanner.next();
         System.out.println(MESSAGE.getInputMessage("password"));
         String password = INPUT.scanner.next();
-                    if (STUDENT_SERVICE.login(username, password)) {
-                        System.out.println(MESSAGE.getSuccessfulMessage("login "));
-        LOGIN_SUBMENU.show();
-                        authHolder.reset();
+        if (STUDENT_SERVICE.login(username, password)) {
+            System.out.println(MESSAGE.getSuccessfulMessage("login "));
+            LOGIN_SUBMENU.show();
+        } else {
+            System.out.println(MESSAGE.getInvalidInputMessage());
+        }
 
-//                    }
     }
-}
 }

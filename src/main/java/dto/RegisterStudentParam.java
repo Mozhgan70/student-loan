@@ -1,5 +1,6 @@
 package dto;
 
+import entity.enumration.City;
 import entity.enumration.EducationGrade;
 import entity.enumration.MaritalStatus;
 import entity.enumration.UniversityType;
@@ -20,6 +21,7 @@ public record RegisterStudentParam (
             Date entryYear,
             EducationGrade educationGrade,
             MaritalStatus maritalStatus,
+            City city,
             boolean isDormitoryResident
     ) {}
 

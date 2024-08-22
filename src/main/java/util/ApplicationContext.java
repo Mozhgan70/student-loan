@@ -8,17 +8,21 @@ import jakarta.persistence.Persistence;
 import menu.*;
 import menu.util.Input;
 import menu.util.Message;
+import repository.LoanTypeConditionRepository;
 import repository.StudentRepository;
+import repository.impl.LoanTypeConditionRepositoryImpl;
 import repository.impl.StudentRepositoryImpl;
+import service.LoanTypeConditionService;
 import service.StudentService;
+import service.impl.LoanTypeConditionServiceImpl;
 import service.impl.StudentServiceImpl;
 
-import java.sql.Connection;
 import org.mapstruct.factory.Mappers;
 
 public class ApplicationContext {
 
-    AuthHolder authHolder = new AuthHolder();
+
+
     private static ApplicationContext applicationContext ;
     private static Menu menu;
     private EntityManagerFactory emf;
@@ -48,19 +52,21 @@ public class ApplicationContext {
     }
 
     public ApplicationContext() {
-        AuthHolder authHolder = new AuthHolder();
+        UserSession userSession = new UserSession();
         Input input = new Input();
         Message message = new Message();
        StudentRepository studentRepository=new StudentRepositoryImpl(getEntityManager());
-        StudentService studentService=new  StudentServiceImpl(studentRepository,studentMapper);
+        LoanTypeConditionRepository loanTypeConditionRepository=new LoanTypeConditionRepositoryImpl(getEntityManager());
+        StudentService studentService=new  StudentServiceImpl(studentRepository,studentMapper, userSession);
+        LoanTypeConditionService loanTypeConditionService=new LoanTypeConditionServiceImpl(loanTypeConditionRepository);
 
 
 
         SignupMenu signupMenu=new SignupMenu(input,message,studentService);
-        RegisterLoanMenu registerLoanMenu=new RegisterLoanMenu(input,message);
+        RegisterLoanMenu registerLoanMenu=new RegisterLoanMenu(input,message,userSession,loanTypeConditionService);
         PaymentMenu paymentMenu=new PaymentMenu(input,message);
         LoginSubmenu loginSubmenu=new LoginSubmenu(input,message,registerLoanMenu,paymentMenu);
-        LoginMenu loginMenu=new LoginMenu(input,message,loginSubmenu,authHolder,studentService);
+        LoginMenu loginMenu=new LoginMenu(input,message,loginSubmenu, userSession,studentService);
         menu = new Menu(input,message,signupMenu,loginMenu);
     }
 
