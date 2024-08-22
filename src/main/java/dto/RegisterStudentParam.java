@@ -21,7 +21,7 @@ public record RegisterStudentParam (
             Date entryYear,
             EducationGrade educationGrade,
             MaritalStatus maritalStatus,
-            City city,
+            City residenceCity,
             boolean isDormitoryResident
     ) {}
 

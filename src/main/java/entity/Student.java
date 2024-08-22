@@ -108,6 +108,7 @@ public class Student {
     @Column(name="password")
     private String password;
 
+    @Enumerated(value =EnumType.STRING)
     @Column(name="residence_city")
     private City residenceCity;
 
@@ -135,15 +136,15 @@ public class Student {
    @Transient
     private boolean canReceiveHousingLoan;
 
-    @PostLoad
-   // @PostPersist
-    @PostUpdate
-    private void calculateCanReceiveHousingLoan() {
-        this.canReceiveHousingLoan =
-                this.maritalStatus == MaritalStatus.MARRIED &&
-                        !this.isDormitoryResident &&
-                        (this.spouse != null || this.id < this.spouse.getId());
-    }
+//    @PostLoad
+//   // @PostPersist
+//    @PostUpdate
+//    private void calculateCanReceiveHousingLoan() {
+//        this.canReceiveHousingLoan =
+//                this.maritalStatus == MaritalStatus.MARRIED &&
+//                        !this.isDormitoryResident &&
+//                        (this.spouse != null || this.id < this.spouse.getId());
+//    }
 
     @PostPersist
     protected void generateUsernameAndPassword() {

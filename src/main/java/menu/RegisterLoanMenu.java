@@ -85,7 +85,7 @@ public class RegisterLoanMenu {
 //                        System.out.println("ثبت‌نام شما موفقیت‌آمیز بود.");
 //                    }
                 } else {
-                    System.out.println("در حال حاضر ثبت‌ نام وام امکان‌پذیر نیست.");
+                    //System.out.println("در حال حاضر ثبت‌ نام وام امکان‌پذیر نیست.");
                     return false;
                 }
             }
@@ -101,24 +101,14 @@ public class RegisterLoanMenu {
 
             LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(USER_SESSION.getEducationGrade().toString(),"TUITION_FEE_LOAN");
 
-
-//        switch (USER_SESSION.getEducationGrade()) {
-//
-//
-//            case ASSOCIATE_DEGREE:
-//                System.out.println("میزان وام پرداختی به شما جهت وام شهریه مبلغ+$+می باشد");
-//        }
+        }
+        else{
+            System.out.println("در حال حاضر ثبت‌ نام وام امکان‌پذیر نیست.");
         }
 
 
-//        ASSOCIATE_DEGREE
-//                BACHELORS_CONTINUOUS
-//                BACHELORS_DISCONTINUOUS
-//                MASTERS_CONTINUOUS
-//                MASTERS_DISCONTINUOUS
-//                PROFESSIONAL_DOCTORATE
-//                DOCTORATE_CONTINUOUS
-//                PHD_DISCONTINUOUS
+
+
 
 
 

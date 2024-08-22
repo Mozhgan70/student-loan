@@ -20,7 +20,9 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student registerStudent(RegisterStudentParam param) {
+        System.out.println(param);
         Student student = studentMapper.toEntity(param);
+        System.out.println(student.getResidenceCity());
         if (!studentRepository.existsByNationalCode(param.nationalCode())) {
             return studentRepository.registerStudent(student);
 
