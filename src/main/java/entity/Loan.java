@@ -58,4 +58,8 @@ public class Loan {
     @Column(name="number_of_unPaid")
     private Integer numberOfUnPaid;
 
+    @ManyToOne
+    @JoinColumn(name="card_id")
+    private Card card;
+
 }
