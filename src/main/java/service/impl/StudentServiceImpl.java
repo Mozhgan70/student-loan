@@ -20,19 +20,28 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student registerStudent(RegisterStudentParam param) {
-        System.out.println(param);
+     try{
         Student student = studentMapper.toEntity(param);
         System.out.println(student.getResidenceCity());
         if (!studentRepository.existsByNationalCode(param.nationalCode())) {
             return studentRepository.registerStudent(student);
 
         }
-       return null;
+
     }
+    catch(Exception e){
+        e.getMessage();
+    }
+    return null;}
 
     @Override
     public Student findByUsernameAndPassword(String username, String password) {
-        return studentRepository.findByUsernameAndPassword(username,password);
+
+        Student byUsernameAndPassword = studentRepository.findByUsernameAndPassword(username, password);
+        if (byUsernameAndPassword != null) {
+            return byUsernameAndPassword;
+        }
+        return null;
     }
 
 

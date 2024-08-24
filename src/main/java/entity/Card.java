@@ -1,9 +1,9 @@
 package entity;
 
+import entity.enumration.Bank;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
 import java.util.Set;
 
 @Entity
@@ -18,10 +18,9 @@ public class Card {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @Column(name="title")
-    private String title;
+
 
     @Column(name="expire_date")
     private String expireDate;
@@ -32,11 +31,14 @@ public class Card {
     @Column(name="cvv2")
     private Integer cvv2;
 
-    @OneToOne(mappedBy = "account_id")
-    @Column(name="account")
-    private Account account;
+    @Column(name="balance")
+    private Double balance;
 
-    @OneToMany(mappedBy = "loan_id")
+    @Enumerated(value=EnumType.STRING)
+    @Column(name="bank")
+    private Bank bank;
+
+    @OneToMany(mappedBy = "card")
     private Set<Loan> loan;
 
 

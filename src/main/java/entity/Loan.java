@@ -62,4 +62,11 @@ public class Loan {
     @JoinColumn(name="card_id")
     private Card card;
 
+    @PrePersist
+    protected void onCreate() {
+        if (installmentsCount == null) {
+            installmentsCount = 60; // Default value set conditionally
+        }
+    }
+
 }

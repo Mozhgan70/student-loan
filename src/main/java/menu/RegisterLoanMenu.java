@@ -1,9 +1,13 @@
 package menu;
 
+import entity.Card;
+import entity.Loan;
 import entity.LoanTypeCondition;
+import entity.enumration.LoanType;
 import entity.enumration.UniversityType;
 import menu.util.Input;
 import menu.util.Message;
+import service.LoanService;
 import service.LoanTypeConditionService;
 import util.UserSession;
 
@@ -16,12 +20,14 @@ public class RegisterLoanMenu {
     private final Message MESSAGE;
     private final UserSession USER_SESSION;
     private final LoanTypeConditionService LOAN_TYPE_CONDITION_SERVICE;
+    private final LoanService LOAN_SERVICE;
 
-    public RegisterLoanMenu(Input input, Message message, UserSession userSession, LoanTypeConditionService loanTypeConditionService) {
+    public RegisterLoanMenu(Input input, Message message, UserSession userSession, LoanTypeConditionService loanTypeConditionService, LoanService loanService) {
         INPUT = input;
         MESSAGE = message;
         this.USER_SESSION = userSession;
         LOAN_TYPE_CONDITION_SERVICE = loanTypeConditionService;
+        LOAN_SERVICE = loanService;
     }
 
     public void show() {
@@ -38,7 +44,7 @@ public class RegisterLoanMenu {
             switch (INPUT.scanner.next()) {
                 case "1":
                     if (getRegisterTuitionLoan() == 1)
-                        registerLoan();
+                        registerLoan(LoanType.TUITION_FEE_LOAN);
                     break;
                 case "2":
 
@@ -90,12 +96,24 @@ public class RegisterLoanMenu {
 //                    }
         } else {
             //System.out.println("در حال حاضر ثبت‌ نام وام امکان‌پذیر نیست.");
-            return false;
+            return true;
         }
     }
 
 
-    public void registerLoan() {
+    public void registerLoan(LoanType loanType) {
+        System.out.println(MESSAGE.getInputMessage("Card Number"));
+        String cardNumber = INPUT.scanner.next();
+        System.out.println(MESSAGE.getInputMessage("Expire Date"));
+        String expireDate = INPUT.scanner.next();
+        System.out.println(MESSAGE.getInputMessage("CVV2"));
+        int cvv2 = INPUT.scanner.nextInt();
+        Card card = Card.builder().cardNumber(cardNumber).expireDate(expireDate).cvv2(cvv2).build();
+      //  Loan loan = Loan.builder().card(card).loanType(loanType)
+        //LOAN_SERVICE.registerLoan()
+
+
+
 
 
     }
@@ -107,7 +125,9 @@ public class RegisterLoanMenu {
 
         if (checkRequestDateIsValid()) {
 
-            LoanTypeCondition tuitionFeeLoan = LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(USER_SESSION.getEducationGrade().toString(), "TUITION_FEE_LOAN");
+            LoanTypeCondition tuitionFeeLoan =
+                    LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(USER_SESSION.getEducationGrade().toString(),
+                            "TUITION_FEE_LOAN");
             if (tuitionFeeLoan != null) {
                 System.out.println("""
                         تسهیلاتی که در قالب تسهیلات شهریه دانشجویی در اختیار شما قرار خواهد گرفت به مبلغ %s می باشد

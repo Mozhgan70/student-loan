@@ -33,7 +33,8 @@ public class SignupMenu {
         STUDENT_SERVICE = studentService;
     }
 
-    public void show(){
+    public void show()
+    {
         SignupMenu:
         while (true) {
             System.out.println("""
@@ -58,8 +59,8 @@ public class SignupMenu {
 
 
     public Date convertPersianDateToDate(String persianDateStr) {
-        Pattern persianDatePattern = Pattern.compile("^\\d{4}/\\d{2}/\\d{2}$");
 
+        Pattern persianDatePattern = Pattern.compile("^\\d{4}/\\d{2}/\\d{2}$");
         if(persianDatePattern.matcher(persianDateStr).matches()){
         String[] parts = persianDateStr.split("/");
         int year = Integer.parseInt(parts[0]);
@@ -77,6 +78,7 @@ public class SignupMenu {
 
 
     public  <T extends Enum<T>> T getEnumChoice(Class<T> enumClass) {
+
         System.out.println("Please select a " + enumClass.getSimpleName() + ":");
         T[] enumConstants = enumClass.getEnumConstants();
         for (int i = 0; i < enumConstants.length; i++) {
@@ -94,6 +96,7 @@ public class SignupMenu {
     }
 
     public void registerStudent() {
+
         System.out.println(MESSAGE.getInputMessage("First Name"));
         String name = INPUT.scanner.next();
         System.out.println(MESSAGE.getInputMessage("Last Name"));

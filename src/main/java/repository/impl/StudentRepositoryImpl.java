@@ -5,6 +5,8 @@ import entity.Student;
 import jakarta.persistence.EntityManager;
 import repository.StudentRepository;
 
+import java.util.List;
+
 public class StudentRepositoryImpl implements StudentRepository {
 
 private final EntityManager entityManager;
@@ -37,10 +39,14 @@ private final EntityManager entityManager;
     @Override
     public Student findByUsernameAndPassword(String username, String password) {
         String hql = "SELECT s FROM Student s WHERE s.userName = :username and s.password = :password";
-        return entityManager.createQuery(hql, Student.class)
+        List<Student> resultList = entityManager.createQuery(hql, Student.class)
                 .setParameter("username", username)
                 .setParameter("password", password)
-                .getSingleResult();
+                .getResultList();
+        if(resultList!=null && resultList.size()>0) {
+            return resultList.get(0);
+        }
+        return null;
     }
 
 }

@@ -8,12 +8,16 @@ import jakarta.persistence.Persistence;
 import menu.*;
 import menu.util.Input;
 import menu.util.Message;
+import repository.LoanRepository;
 import repository.LoanTypeConditionRepository;
 import repository.StudentRepository;
+import repository.impl.LoanRepositoryImpl;
 import repository.impl.LoanTypeConditionRepositoryImpl;
 import repository.impl.StudentRepositoryImpl;
+import service.LoanService;
 import service.LoanTypeConditionService;
 import service.StudentService;
+import service.impl.LoanServiceImpl;
 import service.impl.LoanTypeConditionServiceImpl;
 import service.impl.StudentServiceImpl;
 
@@ -59,11 +63,13 @@ public class ApplicationContext {
         LoanTypeConditionRepository loanTypeConditionRepository=new LoanTypeConditionRepositoryImpl(getEntityManager());
         StudentService studentService=new  StudentServiceImpl(studentRepository,studentMapper, userSession);
         LoanTypeConditionService loanTypeConditionService=new LoanTypeConditionServiceImpl(loanTypeConditionRepository);
+        LoanRepository loanRepository=new LoanRepositoryImpl(getEntityManager());
+        LoanService loanService=new LoanServiceImpl(loanRepository);
 
 
 
         SignupMenu signupMenu=new SignupMenu(input,message,studentService);
-        RegisterLoanMenu registerLoanMenu=new RegisterLoanMenu(input,message,userSession,loanTypeConditionService);
+        RegisterLoanMenu registerLoanMenu=new RegisterLoanMenu(input,message,userSession,loanTypeConditionService,loanService);
         PaymentMenu paymentMenu=new PaymentMenu(input,message);
         LoginSubmenu loginSubmenu=new LoginSubmenu(input,message,registerLoanMenu,paymentMenu);
         LoginMenu loginMenu=new LoginMenu(input,message,loginSubmenu, userSession,studentService);

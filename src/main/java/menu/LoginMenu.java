@@ -60,7 +60,7 @@ public class LoginMenu {
             System.out.println(MESSAGE.getSuccessfulMessage("login "));
             LOGIN_SUBMENU.show();
         } else {
-            System.out.println(MESSAGE.getInvalidInputMessage());
+            System.out.println("user not found");
         }
 
     }
