@@ -41,5 +41,11 @@ public class Card {
     @OneToMany(mappedBy = "card")
     private Set<Loan> loan;
 
+    @PrePersist
+    protected void onCreate() {
+        if (balance == null) {
+            balance = 0.0;
+        }
+    }
 
 }

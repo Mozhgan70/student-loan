@@ -3,15 +3,24 @@ package menu;
 import entity.Card;
 import entity.Loan;
 import entity.LoanTypeCondition;
+import entity.Student;
+import entity.enumration.Bank;
 import entity.enumration.LoanType;
 import entity.enumration.UniversityType;
 import menu.util.Input;
 import menu.util.Message;
 import service.LoanService;
 import service.LoanTypeConditionService;
+import service.StudentService;
+import util.Common;
 import util.UserSession;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -21,13 +30,17 @@ public class RegisterLoanMenu {
     private final UserSession USER_SESSION;
     private final LoanTypeConditionService LOAN_TYPE_CONDITION_SERVICE;
     private final LoanService LOAN_SERVICE;
+    private final StudentService STUDENT_SERVICE;
+    private final Common COMMON;
 
-    public RegisterLoanMenu(Input input, Message message, UserSession userSession, LoanTypeConditionService loanTypeConditionService, LoanService loanService) {
+    public RegisterLoanMenu(Input input, Message message, UserSession userSession, LoanTypeConditionService loanTypeConditionService, LoanService loanService, StudentService studentService, Common common) {
         INPUT = input;
         MESSAGE = message;
         this.USER_SESSION = userSession;
         LOAN_TYPE_CONDITION_SERVICE = loanTypeConditionService;
         LOAN_SERVICE = loanService;
+        STUDENT_SERVICE = studentService;
+        COMMON = common;
     }
 
     public void show() {
@@ -39,12 +52,14 @@ public class RegisterLoanMenu {
                     2 ->Education loan
                     3 ->Housing Loan
                     4 ->Previous
-                                       
                     """);
             switch (INPUT.scanner.next()) {
                 case "1":
-                    if (getRegisterTuitionLoan() == 1)
-                        registerLoan(LoanType.TUITION_FEE_LOAN);
+                    LoanTypeCondition tuitionFeeLoan =
+                            LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(USER_SESSION.getEducationGrade(),
+                                    LoanType.TUITION_FEE_LOAN);
+                    if (getRegisterTuitionLoan(tuitionFeeLoan) == 1)
+                        registerLoan(tuitionFeeLoan);
                     break;
                 case "2":
 
@@ -101,33 +116,79 @@ public class RegisterLoanMenu {
     }
 
 
-    public void registerLoan(LoanType loanType) {
+    public void registerLoan(LoanTypeCondition loanType) {
         System.out.println(MESSAGE.getInputMessage("Card Number"));
         String cardNumber = INPUT.scanner.next();
         System.out.println(MESSAGE.getInputMessage("Expire Date"));
         String expireDate = INPUT.scanner.next();
         System.out.println(MESSAGE.getInputMessage("CVV2"));
         int cvv2 = INPUT.scanner.nextInt();
-        Card card = Card.builder().cardNumber(cardNumber).expireDate(expireDate).cvv2(cvv2).build();
-      //  Loan loan = Loan.builder().card(card).loanType(loanType)
-        //LOAN_SERVICE.registerLoan()
-
-
-
-
+        System.out.println(MESSAGE.getInputMessage("Bank Name Your Bank Must Be one Of Following Banks"));
+        Bank bank =COMMON.getEnumChoice(Bank.class);
+        Card card = Card.builder()
+                .cardNumber(cardNumber)
+                .expireDate(expireDate)
+                .cvv2(cvv2)
+                .bank(bank)
+                .build();
+        Student student=STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
+        Loan loan = Loan.builder()
+                .card(card)
+                .loanType(loanType)
+                .paymentDate(new Date())
+                .registerLoanDate(new Date())
+                .remainLoanAmount(loanType.getAmount())
+                .startInstallments(calcInstallmentStartDate(student))
+                .student(student).build();
+        calculateInstallments(loanType.getAmount(),100);
+//        LOAN_SERVICE.registerLoan(loan);
 
     }
 
-    ;
 
-    public int getRegisterTuitionLoan() {
+    public Date calcInstallmentStartDate(Student student)
+    {
+        Date entryYear=student.getEntryYear();
+//        Date sysDate = new Date();
+//        LocalDate localSysDate = sysDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate localDbDate = entryYear.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//        Period period = Period.between(localDbDate, localSysDate);
+//        int diffYears = period.getYears();
+        // Add the difference in years to the entry year date
+        LocalDate updatedEntryYearDate=localDbDate;
+        switch (student.getEducationGrade()){
+            case ASSOCIATE_DEGREE:
+            case MASTERS_DISCONTINUOUS:
+                updatedEntryYearDate = localDbDate.plusYears(2);
+                break;
+            case BACHELORS_CONTINUOUS:
+            case BACHELORS_DISCONTINUOUS:
+                 updatedEntryYearDate = localDbDate.plusYears(4);
+                break;
+            case MASTERS_CONTINUOUS:
+                updatedEntryYearDate = localDbDate.plusYears(6);
+                break;
+            case PROFESSIONAL_DOCTORATE:
+            case DOCTORATE_CONTINUOUS:
+            case PHD_DISCONTINUOUS:
+                updatedEntryYearDate = localDbDate.plusYears(5);
+                break;
+
+        }
+
+
+
+        // Convert back to java.util.Date if needed
+        return Date.from(updatedEntryYearDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+    }
+
+
+
+    public int getRegisterTuitionLoan(LoanTypeCondition tuitionFeeLoan) {
        if(USER_SESSION.getUniversityType()!= UniversityType.Rozane){
 
         if (checkRequestDateIsValid()) {
-
-            LoanTypeCondition tuitionFeeLoan =
-                    LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(USER_SESSION.getEducationGrade().toString(),
-                            "TUITION_FEE_LOAN");
             if (tuitionFeeLoan != null) {
                 System.out.println("""
                         تسهیلاتی که در قالب تسهیلات شهریه دانشجویی در اختیار شما قرار خواهد گرفت به مبلغ %s می باشد
@@ -149,6 +210,25 @@ public class RegisterLoanMenu {
            System.out.println("این وام متعلق به دانشجویان شهریه پرداز است");
            return 0;
        }
+    }
+
+    public static void calculateInstallments(double loanAmount, double annualIncreasePercentage) {
+
+        double monthlyInterestRate = (4.0 / 100) / 12;
+        double initialInstallment = ( loanAmount * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, 60))
+                / (Math.pow(1 + monthlyInterestRate, 60) - 1);
+
+        LocalDate startDate = LocalDate.now();
+        for (int year = 1; year <= 5; year++) {
+
+            for (int i = 0; i < 12; i++) {
+                startDate = startDate.plusMonths(1);
+                System.out.println("Updated Date: " + startDate);
+            }
+
+            initialInstallment *= (1 + annualIncreasePercentage / 100);
+        }
+
     }
 
 }

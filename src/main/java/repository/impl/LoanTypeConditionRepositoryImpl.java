@@ -2,6 +2,8 @@ package repository.impl;
 
 import entity.LoanTypeCondition;
 import entity.Student;
+import entity.enumration.EducationGrade;
+import entity.enumration.LoanType;
 import jakarta.persistence.EntityManager;
 import repository.LoanTypeConditionRepository;
 
@@ -13,7 +15,7 @@ public class LoanTypeConditionRepositoryImpl implements LoanTypeConditionReposit
     }
 
     @Override
-    public LoanTypeCondition findByEducationandLoanType(String education, String loanType) {
+    public LoanTypeCondition findByEducationandLoanType(EducationGrade education, LoanType loanType) {
         String hql = "SELECT s FROM LoanTypeCondition s WHERE s.educationGrade = :education and s.loanType = :loanType"  ;
         return entityManager.createQuery(hql, LoanTypeCondition.class)
                 .setParameter("education", education)

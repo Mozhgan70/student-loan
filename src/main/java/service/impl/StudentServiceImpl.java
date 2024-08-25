@@ -54,11 +54,17 @@ public class StudentServiceImpl implements StudentService {
             userSession.setTokenName(student.getUserName());
             userSession.setEducationGrade(student.getEducationGrade());
             userSession.setMaritalStatus(student.getMaritalStatus());
+            userSession.setUniversityType(student.getUniversityType());
             userSession.setCity(student.getResidenceCity());
             return true;
         }
         return false;
 
+    }
+
+    @Override
+    public Student findStudentById(long id) {
+        return studentRepository.findStudentById(id);
     }
 }
 //    @Override

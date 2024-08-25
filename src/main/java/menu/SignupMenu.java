@@ -8,6 +8,7 @@ import entity.enumration.UniversityType;
 import menu.util.Input;
 import menu.util.Message;
 import service.StudentService;
+import util.Common;
 import util.jalaliCalender.JalaliDate;
 import util.jalaliCalender.JalaliDateUtil;
 
@@ -22,15 +23,17 @@ public class SignupMenu {
     private final Input INPUT;
     private final Message MESSAGE;
     private final StudentService STUDENT_SERVICE;
+    private final Common COMMON;
 
 
 
-    public SignupMenu(Input INPUT, Message MESSAGE, StudentService studentService) {
+    public SignupMenu(Input INPUT, Message MESSAGE, StudentService studentService, Common common) {
         this.INPUT = INPUT;
         this.MESSAGE = MESSAGE;
 
 
         STUDENT_SERVICE = studentService;
+        COMMON = common;
     }
 
     public void show()
@@ -77,23 +80,7 @@ public class SignupMenu {
     }
 
 
-    public  <T extends Enum<T>> T getEnumChoice(Class<T> enumClass) {
 
-        System.out.println("Please select a " + enumClass.getSimpleName() + ":");
-        T[] enumConstants = enumClass.getEnumConstants();
-        for (int i = 0; i < enumConstants.length; i++) {
-            System.out.println((i + 1) + ". " + enumConstants[i]);
-        }
-        System.out.println(MESSAGE.getInputMessage("Number Of Your Choice"));
-        int choice = INPUT.scanner.nextInt();
-
-        if (choice > 0 && choice <= enumConstants.length) {
-            return enumConstants[choice - 1];
-        } else {
-            System.out.println(MESSAGE.getInvalidInputMessage());
-            return null;
-        }
-    }
 
     public void registerStudent() {
 
@@ -116,14 +103,14 @@ public class SignupMenu {
         String studentNumber= INPUT.scanner.next();
         System.out.println(MESSAGE.getInputMessage("University Name"));
         String universityName= INPUT.scanner.next();
-        UniversityType universityType = getEnumChoice(UniversityType.class);
-        City residenceCity = getEnumChoice(City.class);
+        UniversityType universityType =COMMON.getEnumChoice(UniversityType.class);
+        City residenceCity =COMMON.getEnumChoice(City.class);
         System.out.println(residenceCity);
         System.out.println(MESSAGE.getInputMessage("Entry Year In This Format YYYY/MM/DD For Example 1403/05/28"));
         String persianEntryYear= INPUT.scanner.next();
         Date entryYear = convertPersianDateToDate(persianEntryYear);
-        EducationGrade educationGrade=getEnumChoice(EducationGrade.class);
-        MaritalStatus maritalStatus=getEnumChoice(MaritalStatus.class);
+        EducationGrade educationGrade=COMMON.getEnumChoice(EducationGrade.class);
+        MaritalStatus maritalStatus=COMMON.getEnumChoice(MaritalStatus.class);
         System.out.println("Are You Dormitory Resident ");
         System.out.println("1.Yes");
         System.out.println("2.No");

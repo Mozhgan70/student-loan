@@ -1,6 +1,8 @@
 package service.impl;
 
 import entity.LoanTypeCondition;
+import entity.enumration.EducationGrade;
+import entity.enumration.LoanType;
 import repository.LoanTypeConditionRepository;
 import service.LoanTypeConditionService;
 
@@ -14,7 +16,7 @@ public class LoanTypeConditionServiceImpl implements LoanTypeConditionService {
 
 
     @Override
-    public LoanTypeCondition findByEducationandLoanType(String education, String loanType) {
+    public LoanTypeCondition findByEducationandLoanType(EducationGrade education, LoanType loanType) {
         return loanTypeConditionRepository.findByEducationandLoanType(education,loanType);
     }
 }

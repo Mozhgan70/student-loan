@@ -59,6 +59,7 @@ public class ApplicationContext {
         UserSession userSession = new UserSession();
         Input input = new Input();
         Message message = new Message();
+        Common common=new Common(input,message);
        StudentRepository studentRepository=new StudentRepositoryImpl(getEntityManager());
         LoanTypeConditionRepository loanTypeConditionRepository=new LoanTypeConditionRepositoryImpl(getEntityManager());
         StudentService studentService=new  StudentServiceImpl(studentRepository,studentMapper, userSession);
@@ -68,8 +69,8 @@ public class ApplicationContext {
 
 
 
-        SignupMenu signupMenu=new SignupMenu(input,message,studentService);
-        RegisterLoanMenu registerLoanMenu=new RegisterLoanMenu(input,message,userSession,loanTypeConditionService,loanService);
+        SignupMenu signupMenu=new SignupMenu(input,message,studentService,common);
+        RegisterLoanMenu registerLoanMenu=new RegisterLoanMenu(input,message,userSession,loanTypeConditionService,loanService,studentService,common);
         PaymentMenu paymentMenu=new PaymentMenu(input,message);
         LoginSubmenu loginSubmenu=new LoginSubmenu(input,message,registerLoanMenu,paymentMenu);
         LoginMenu loginMenu=new LoginMenu(input,message,loginSubmenu, userSession,studentService);

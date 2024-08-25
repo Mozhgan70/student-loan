@@ -24,6 +24,14 @@ private final EntityManager entityManager;
     }
 
     @Override
+    public Student findStudentById(long id) {
+
+        return entityManager.find(Student.class,id);
+
+
+    }
+
+    @Override
     public boolean existsByNationalCode(String nationalCode) {
         String hql = "SELECT count(s.id) > 0 FROM Student s WHERE s.nationalCode = :nationalCode";
         return entityManager.createQuery(hql, Boolean.class)

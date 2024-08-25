@@ -17,7 +17,6 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @SuperBuilder
 public class Loan {
 
@@ -50,7 +49,7 @@ public class Loan {
     private Integer installmentsCount;
 
     @Column(name="remain_loan_amount")
-    private BigDecimal remainLoanAmount;
+    private Double remainLoanAmount;
 
     @Column(name="number_of_paid")
     private Integer numberOfPaid;
@@ -58,14 +57,21 @@ public class Loan {
     @Column(name="number_of_unPaid")
     private Integer numberOfUnPaid;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name="card_id")
     private Card card;
 
     @PrePersist
     protected void onCreate() {
         if (installmentsCount == null) {
-            installmentsCount = 60; // Default value set conditionally
+            installmentsCount = 60;
+        }
+        if (numberOfPaid == null) {
+            numberOfPaid = 0;
+        }
+
+        if (numberOfUnPaid == null) {
+            numberOfUnPaid = 60;
         }
     }
 

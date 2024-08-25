@@ -38,7 +38,7 @@ public class LoanTypeCondition {
     private EducationGrade educationGrade;
 
     @Column(name="amount")
-    private BigDecimal amount;
+    private Double amount;
 
     @Column(name="city")
     private String city;

@@ -8,5 +8,6 @@ public interface StudentService {
     //String generatePassword();
     Student findByUsernameAndPassword(String username, String password);
     boolean login (String username, String password);
+    Student findStudentById(long id);
 
 }
