@@ -29,23 +29,35 @@ public class Installment {
     private Date installmentDate;
 
     @Column(name="installment_amount")
-    private BigDecimal installmentAmount;
+    private Double installmentAmount;
 
     @Column(name="payment_date")
     private Date paymentDate;
 
     @Column(name="payment_amount")
-    private BigDecimal paymentAmount;
+    private Double paymentAmount;
 
     @Column(name="unpayment_amount")
-    private BigDecimal unPaymentAmount;
+    private Double unPaymentAmount;
 
     @Column(name="isPaid")
     private Boolean isPaid;
 
-   @ManyToOne
+   @ManyToOne(cascade = CascadeType.ALL)
    @JoinColumn(name="loan_id")
    private Loan loan;
 
+    @PrePersist
+    protected void onCreate() {
+        if (isPaid == null) {
+            isPaid = false;
+        }
+        if (paymentAmount == null) {
+            paymentAmount = 0.0;
+        }
 
+        if (unPaymentAmount == null) {
+            unPaymentAmount =installmentAmount ;
+        }
+    }
 }

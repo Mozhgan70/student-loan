@@ -1,9 +1,6 @@
 package menu;
 
-import entity.Card;
-import entity.Loan;
-import entity.LoanTypeCondition;
-import entity.Student;
+import entity.*;
 import entity.enumration.Bank;
 import entity.enumration.LoanType;
 import entity.enumration.UniversityType;
@@ -23,6 +20,8 @@ import java.time.Period;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 public class RegisterLoanMenu {
     private final Input INPUT;
@@ -109,7 +108,9 @@ public class RegisterLoanMenu {
 //                        // ثبت‌نام دانشجو
 //                        System.out.println("ثبت‌نام شما موفقیت‌آمیز بود.");
 //                    }
-        } else {
+
+        } else
+        {
             //System.out.println("در حال حاضر ثبت‌ نام وام امکان‌پذیر نیست.");
             return true;
         }
@@ -131,6 +132,7 @@ public class RegisterLoanMenu {
                 .cvv2(cvv2)
                 .bank(bank)
                 .build();
+
         Student student=STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
         Loan loan = Loan.builder()
                 .card(card)
@@ -140,7 +142,8 @@ public class RegisterLoanMenu {
                 .remainLoanAmount(loanType.getAmount())
                 .startInstallments(calcInstallmentStartDate(student))
                 .student(student).build();
-        calculateInstallments(loanType.getAmount(),100);
+        calculateInstallments(loanType.getAmount(),100,loan);
+
 //        LOAN_SERVICE.registerLoan(loan);
 
     }
@@ -212,8 +215,9 @@ public class RegisterLoanMenu {
        }
     }
 
-    public static void calculateInstallments(double loanAmount, double annualIncreasePercentage) {
+    public Set<Installment> calculateInstallments(double loanAmount, double annualIncreasePercentage,Loan loan) {
 
+        Set<Installment> installments=new HashSet<>();
         double monthlyInterestRate = (4.0 / 100) / 12;
         double initialInstallment = ( loanAmount * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, 60))
                 / (Math.pow(1 + monthlyInterestRate, 60) - 1);
@@ -225,15 +229,19 @@ public class RegisterLoanMenu {
             for (int i = 0; i < 12; i++) {
 
                 startDate = startDate.plusMonths(1);
-                System.out.printf("قسط ماهیانه در سال %d: %.2f تومان%n", year, initialInstallment);
-                System.out.println("Updated Date: " + startDate);
                 count++;
-                System.out.print(count);
+                Installment installment=Installment.builder().installmentAmount(initialInstallment)
+                        .installmentDate( Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                        .installmentNumber(count)
+                        .loan(loan)
+                        .build();
+
+                installments.add(installment);
 
             }
             initialInstallment *= (1 + annualIncreasePercentage / 100);
         }
-
+      return installments;
     }
 
 }
