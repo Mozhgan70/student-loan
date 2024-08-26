@@ -218,14 +218,19 @@ public class RegisterLoanMenu {
         double initialInstallment = ( loanAmount * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, 60))
                 / (Math.pow(1 + monthlyInterestRate, 60) - 1);
 
+
         LocalDate startDate = LocalDate.now();
+        int count=0;
         for (int year = 1; year <= 5; year++) {
-
             for (int i = 0; i < 12; i++) {
-                startDate = startDate.plusMonths(1);
-                System.out.println("Updated Date: " + startDate);
-            }
 
+                startDate = startDate.plusMonths(1);
+                System.out.printf("قسط ماهیانه در سال %d: %.2f تومان%n", year, initialInstallment);
+                System.out.println("Updated Date: " + startDate);
+                count++;
+                System.out.print(count);
+
+            }
             initialInstallment *= (1 + annualIncreasePercentage / 100);
         }
 

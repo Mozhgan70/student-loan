@@ -54,15 +54,14 @@ public class SignupMenu {
                 }
                 default:
                     System.out.println(MESSAGE.getInvalidInputMessage());
-
             }
-
         }
     }
 
 
-    public Date convertPersianDateToDate(String persianDateStr) {
 
+    public Date convertPersianDateToDate(String persianDateStr)
+    {
         Pattern persianDatePattern = Pattern.compile("^\\d{4}/\\d{2}/\\d{2}$");
         if(persianDatePattern.matcher(persianDateStr).matches()){
         String[] parts = persianDateStr.split("/");
@@ -73,7 +72,8 @@ public class SignupMenu {
         Calendar gregorianCalendar = JalaliDateUtil.ShamsyToMilady(jalaliDate);
         Date gregorianDate = gregorianCalendar.getTime();
         return gregorianDate;}
-        else{
+        else
+        {
             System.out.println("Invalid Persian Date Format");
             return null;
         }
@@ -83,7 +83,6 @@ public class SignupMenu {
 
 
     public void registerStudent() {
-
         System.out.println(MESSAGE.getInputMessage("First Name"));
         String name = INPUT.scanner.next();
         System.out.println(MESSAGE.getInputMessage("Last Name"));

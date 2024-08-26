@@ -40,6 +40,9 @@ public class LoanTypeCondition {
     @Column(name="amount")
     private Double amount;
 
+    @Column(name="profit")
+    private Double profit;
+
     @Column(name="city")
     private String city;
 

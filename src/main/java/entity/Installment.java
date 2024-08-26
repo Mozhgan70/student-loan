@@ -40,8 +40,8 @@ public class Installment {
     @Column(name="unpayment_amount")
     private BigDecimal unPaymentAmount;
 
-    @Column(name="isPayment")
-    private Boolean isPayment;
+    @Column(name="isPaid")
+    private Boolean isPaid;
 
    @ManyToOne
    @JoinColumn(name="loan_id")
