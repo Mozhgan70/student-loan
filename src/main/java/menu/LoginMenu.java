@@ -43,12 +43,9 @@ public class LoginMenu {
                     break LoginMenu;
                 }
                 default:
-                    System.out.println(MESSAGE.getInvalidInputMessage());
-            }
+                    System.out.println(MESSAGE.getInvalidInputMessage());}
 
         }
-
-
     }
 
     private void getLogin() {
