@@ -16,8 +16,8 @@ public class LoanTypeConditionRepositoryImpl implements LoanTypeConditionReposit
 
     @Override
     public LoanTypeCondition findByEducationandLoanType(EducationGrade education, LoanType loanType) {
-        String hql = "SELECT s FROM LoanTypeCondition s WHERE s.educationGrade = :education and s.loanType = :loanType"  ;
-        return entityManager.createQuery(hql, LoanTypeCondition.class)
+        String query = "SELECT s FROM LoanTypeCondition s WHERE s.educationGrade = :education and s.loanType = :loanType"  ;
+        return entityManager.createQuery(query, LoanTypeCondition.class)
                 .setParameter("education", education)
                 .setParameter("loanType", loanType)
                 .getSingleResult();

@@ -118,6 +118,8 @@ public class RegisterLoanMenu {
 
 
     public void registerLoan(LoanTypeCondition loanType) {
+        Student student=STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
+        Loan studentLoans=LOAN_SERVICE.FindStudentLoan(student,loanType.getLoanType());
         System.out.println(MESSAGE.getInputMessage("Card Number"));
         String cardNumber = INPUT.scanner.next();
         System.out.println(MESSAGE.getInputMessage("Expire Date"));
@@ -133,7 +135,7 @@ public class RegisterLoanMenu {
                 .bank(bank)
                 .build();
 
-        Student student=STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
+
         Loan loan = Loan.builder()
                 .card(card)
                 .loanType(loanType)
