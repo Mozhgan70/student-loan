@@ -8,15 +8,19 @@ import jakarta.persistence.Persistence;
 import menu.*;
 import menu.util.Input;
 import menu.util.Message;
+import repository.InstallmentRepository;
 import repository.LoanRepository;
 import repository.LoanTypeConditionRepository;
 import repository.StudentRepository;
+import repository.impl.InstallmentRepositoryImpl;
 import repository.impl.LoanRepositoryImpl;
 import repository.impl.LoanTypeConditionRepositoryImpl;
 import repository.impl.StudentRepositoryImpl;
+import service.InstallmentService;
 import service.LoanService;
 import service.LoanTypeConditionService;
 import service.StudentService;
+import service.impl.InstallmentServiceImpl;
 import service.impl.LoanServiceImpl;
 import service.impl.LoanTypeConditionServiceImpl;
 import service.impl.StudentServiceImpl;
@@ -62,15 +66,18 @@ public class ApplicationContext {
         Common common=new Common(input,message);
        StudentRepository studentRepository=new StudentRepositoryImpl(getEntityManager());
         LoanTypeConditionRepository loanTypeConditionRepository=new LoanTypeConditionRepositoryImpl(getEntityManager());
+        LoanRepository loanRepository=new LoanRepositoryImpl(getEntityManager());
+        InstallmentRepository installmentRepository=new InstallmentRepositoryImpl(getEntityManager());
+
         StudentService studentService=new  StudentServiceImpl(studentRepository,studentMapper, userSession);
         LoanTypeConditionService loanTypeConditionService=new LoanTypeConditionServiceImpl(loanTypeConditionRepository);
-        LoanRepository loanRepository=new LoanRepositoryImpl(getEntityManager());
         LoanService loanService=new LoanServiceImpl(loanRepository);
+        InstallmentService installmentService=new InstallmentServiceImpl(installmentRepository);
 
 
 
         SignupMenu signupMenu=new SignupMenu(input,message,studentService,common);
-        RegisterLoanMenu registerLoanMenu=new RegisterLoanMenu(input,message,userSession,loanTypeConditionService,loanService,studentService,common);
+        RegisterLoanMenu registerLoanMenu=new RegisterLoanMenu(input,message,userSession,loanTypeConditionService,studentService,common,installmentService);
         PaymentMenu paymentMenu=new PaymentMenu(input,message);
         LoginSubmenu loginSubmenu=new LoginSubmenu(input,message,registerLoanMenu,paymentMenu);
         LoginMenu loginMenu=new LoginMenu(input,message,loginSubmenu, userSession,studentService);

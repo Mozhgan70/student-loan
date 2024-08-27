@@ -8,7 +8,8 @@ public class Menu {
     private final Message MESSAGE;
     private final SignupMenu SIGNUP_MENU;
     private final LoginMenu LOGIN_MENU;
-    public Menu(Input input, Message message, SignupMenu signupMenu, LoginMenu loginMenu) {
+    public Menu(Input input, Message message, SignupMenu signupMenu, LoginMenu loginMenu)
+    {
         INPUT = input;
         MESSAGE = message;
         SIGNUP_MENU = signupMenu;

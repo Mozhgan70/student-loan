@@ -6,6 +6,7 @@ import entity.enumration.LoanType;
 import entity.enumration.UniversityType;
 import menu.util.Input;
 import menu.util.Message;
+import service.InstallmentService;
 import service.LoanService;
 import service.LoanTypeConditionService;
 import service.StudentService;
@@ -28,18 +29,19 @@ public class RegisterLoanMenu {
     private final Message MESSAGE;
     private final UserSession USER_SESSION;
     private final LoanTypeConditionService LOAN_TYPE_CONDITION_SERVICE;
-    private final LoanService LOAN_SERVICE;
     private final StudentService STUDENT_SERVICE;
     private final Common COMMON;
+    private final InstallmentService INSTALLMENT_SERVICE;
 
-    public RegisterLoanMenu(Input input, Message message, UserSession userSession, LoanTypeConditionService loanTypeConditionService, LoanService loanService, StudentService studentService, Common common) {
+    public RegisterLoanMenu(Input input, Message message, UserSession userSession, LoanTypeConditionService loanTypeConditionService,StudentService studentService, Common common, InstallmentService installmentService) {
         INPUT = input;
         MESSAGE = message;
         this.USER_SESSION = userSession;
         LOAN_TYPE_CONDITION_SERVICE = loanTypeConditionService;
-        LOAN_SERVICE = loanService;
+
         STUDENT_SERVICE = studentService;
         COMMON = common;
+        INSTALLMENT_SERVICE = installmentService;
     }
 
     public void show() {
@@ -79,28 +81,29 @@ public class RegisterLoanMenu {
 
         // تاریخ‌های شروع و پایان دوره‌های ثبت‌نام
         Calendar cal = Calendar.getInstance();
-
+        int currentYear = cal.get(Calendar.YEAR);
         // دوره اول: 1 آبان تا 8 آبان
-        cal.set(2024, Calendar.OCTOBER, 22, 0, 0, 0); // 1 آبان (ماه‌ها از 0 شروع می‌شوند)
+        cal.set(currentYear, Calendar.OCTOBER, 22, 0, 0, 0); // 1 آبان (ماه‌ها از 0 شروع می‌شوند)
         Date startPeriod1 = cal.getTime();
-        cal.set(2024, Calendar.OCTOBER, 29, 23, 59, 59); // 8 آبان
+        cal.set(currentYear, Calendar.OCTOBER, 29, 23, 59, 59); // 8 آبان
         Date endPeriod1 = cal.getTime();
 
         // دوره دوم: 25 بهمن تا 2 اسفند
-        cal.set(2024, Calendar.FEBRUARY, 14, 0, 0, 0); // 25 بهمن
+        cal.set(currentYear, Calendar.FEBRUARY, 14, 0, 0, 0); // 25 بهمن
         Date startPeriod2 = cal.getTime();
-        cal.set(2024, Calendar.FEBRUARY, 21, 23, 59, 59); // 2 اسفند
+        cal.set(currentYear, Calendar.FEBRUARY, 21, 23, 59, 59); // 2 اسفند
         Date endPeriod2 = cal.getTime();
 
         // تاریخ جاری سیستم
         Date currentDateTime = new Date();
+
 
         // چک کردن تاریخ جاری با دوره‌های ثبت‌نام
         if ((currentDateTime.after(startPeriod1) && currentDateTime.before(endPeriod1)) ||
                 (currentDateTime.after(startPeriod2) && currentDateTime.before(endPeriod2))) {
             return true;
             // چک کنید که آیا دانشجو قبلاً ثبت‌نام کرده یا خیر
-//                    boolean alreadyRegistered = checkIfStudentAlreadyRegistered(); // تابع برای بررسی ثبت‌نام قبلی
+      //              boolean alreadyRegistered = checkIfStudentAlreadyRegistered(); // تابع برای بررسی ثبت‌نام قبلی
 //
 //                    if (alreadyRegistered) {
 //                        System.out.println("شما قبلاً در این دوره ثبت‌نام کرده‌اید و نمی‌توانید دوباره ثبت‌نام کنید.");
@@ -115,6 +118,7 @@ public class RegisterLoanMenu {
             return true;
         }
     }
+
 
 
     public void registerLoan(LoanTypeCondition loanType) {
@@ -144,8 +148,8 @@ public class RegisterLoanMenu {
                 .remainLoanAmount(loanType.getAmount())
                 .startInstallments(calcInstallmentStartDate(student))
                 .student(student).build();
-        calculateInstallments(loanType.getAmount(),100,loan);
-
+        Set<Installment> installments = calculateInstallments(loanType.getAmount(), 100, loan);
+        INSTALLMENT_SERVICE.setInstallment(installments);
 //        LOAN_SERVICE.registerLoan(loan);
 
     }
@@ -182,13 +186,10 @@ public class RegisterLoanMenu {
         }
 
 
-
         // Convert back to java.util.Date if needed
         return Date.from(updatedEntryYearDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
     }
-
-
 
     public int getRegisterTuitionLoan(LoanTypeCondition tuitionFeeLoan) {
        if(USER_SESSION.getUniversityType()!= UniversityType.Rozane){
@@ -217,19 +218,19 @@ public class RegisterLoanMenu {
        }
     }
 
-    public Set<Installment> calculateInstallments(double loanAmount, double annualIncreasePercentage,Loan loan) {
+    public Set<Installment> calculateInstallments(double loanAmount, double annualIncreasePercentage,Loan loan)
 
+    {
         Set<Installment> installments=new HashSet<>();
         double monthlyInterestRate = (4.0 / 100) / 12;
         double initialInstallment = ( loanAmount * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, 60))
                 / (Math.pow(1 + monthlyInterestRate, 60) - 1);
 
-
         LocalDate startDate = LocalDate.now();
         int count=0;
         for (int year = 1; year <= 5; year++) {
-            for (int i = 0; i < 12; i++) {
 
+            for (int i = 0; i < 12; i++) {
                 startDate = startDate.plusMonths(1);
                 count++;
                 Installment installment=Installment.builder().installmentAmount(initialInstallment)
@@ -237,9 +238,7 @@ public class RegisterLoanMenu {
                         .installmentNumber(count)
                         .loan(loan)
                         .build();
-
                 installments.add(installment);
-
             }
             initialInstallment *= (1 + annualIncreasePercentage / 100);
         }

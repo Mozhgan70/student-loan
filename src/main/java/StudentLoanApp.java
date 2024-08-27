@@ -18,10 +18,38 @@ public class StudentLoanApp {
 
 
     public static void main(String[] args) {
+      ApplicationContext.getInstance().getMenu().show();
 
 
-        ApplicationContext.getInstance().getMenu().show();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //        double loanAmount = 2_600_000; // مبلغ وام
 //        double annualIncreasePercentage = 100; // درصد افزایش پلکانی هر سال (دو برابر شدن هر سال)
 //

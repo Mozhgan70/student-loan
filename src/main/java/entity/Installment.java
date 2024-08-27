@@ -43,7 +43,7 @@ public class Installment {
     @Column(name="isPaid")
     private Boolean isPaid;
 
-   @ManyToOne(cascade = CascadeType.ALL)
+   @ManyToOne(cascade = CascadeType.PERSIST)
    @JoinColumn(name="loan_id")
    private Loan loan;
 
