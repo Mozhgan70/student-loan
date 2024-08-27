@@ -31,9 +31,10 @@ public class RegisterLoanMenu {
     private final LoanTypeConditionService LOAN_TYPE_CONDITION_SERVICE;
     private final StudentService STUDENT_SERVICE;
     private final Common COMMON;
+    private final LoanService  LOAN_SERVICE;
     private final InstallmentService INSTALLMENT_SERVICE;
 
-    public RegisterLoanMenu(Input input, Message message, UserSession userSession, LoanTypeConditionService loanTypeConditionService,StudentService studentService, Common common, InstallmentService installmentService) {
+    public RegisterLoanMenu(Input input, Message message, UserSession userSession, LoanTypeConditionService loanTypeConditionService, StudentService studentService, Common common, LoanService loanService, InstallmentService installmentService) {
         INPUT = input;
         MESSAGE = message;
         this.USER_SESSION = userSession;
@@ -41,6 +42,7 @@ public class RegisterLoanMenu {
 
         STUDENT_SERVICE = studentService;
         COMMON = common;
+        LOAN_SERVICE = loanService;
         INSTALLMENT_SERVICE = installmentService;
     }
 

@@ -77,7 +77,7 @@ public class ApplicationContext {
 
 
         SignupMenu signupMenu=new SignupMenu(input,message,studentService,common);
-        RegisterLoanMenu registerLoanMenu=new RegisterLoanMenu(input,message,userSession,loanTypeConditionService,studentService,common,installmentService);
+        RegisterLoanMenu registerLoanMenu=new RegisterLoanMenu(input,message,userSession,loanTypeConditionService,studentService,common,loanService,installmentService);
         PaymentMenu paymentMenu=new PaymentMenu(input,message);
         LoginSubmenu loginSubmenu=new LoginSubmenu(input,message,registerLoanMenu,paymentMenu);
         LoginMenu loginMenu=new LoginMenu(input,message,loginSubmenu, userSession,studentService);
