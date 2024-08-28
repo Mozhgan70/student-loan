@@ -58,10 +58,11 @@ public class RegisterLoanMenu {
                     """);
             switch (INPUT.scanner.next()) {
                 case "1":
+                    Student student=STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
                     LoanTypeCondition tuitionFeeLoan =
                             LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(USER_SESSION.getEducationGrade(),
                                     LoanType.TUITION_FEE_LOAN);
-                    if (getRegisterTuitionLoan(tuitionFeeLoan) == 1)
+                    if (getRegisterTuitionLoan(tuitionFeeLoan,student) == 1)
                         registerLoan(tuitionFeeLoan);
                     break;
                 case "2":
@@ -79,7 +80,8 @@ public class RegisterLoanMenu {
     }
 
 
-    public boolean checkRequestDateIsValid() {
+    public boolean checkRequestDateIsValid(LoanType loanType,Student student) {
+
 
         // تاریخ‌های شروع و پایان دوره‌های ثبت‌نام
         Calendar cal = Calendar.getInstance();
@@ -100,32 +102,39 @@ public class RegisterLoanMenu {
         Date currentDateTime = new Date();
 
 
+
         // چک کردن تاریخ جاری با دوره‌های ثبت‌نام
         if ((currentDateTime.after(startPeriod1) && currentDateTime.before(endPeriod1)) ||
                 (currentDateTime.after(startPeriod2) && currentDateTime.before(endPeriod2))) {
-            return true;
-            // چک کنید که آیا دانشجو قبلاً ثبت‌نام کرده یا خیر
-      //              boolean alreadyRegistered = checkIfStudentAlreadyRegistered(); // تابع برای بررسی ثبت‌نام قبلی
-//
-//                    if (alreadyRegistered) {
-//                        System.out.println("شما قبلاً در این دوره ثبت‌نام کرده‌اید و نمی‌توانید دوباره ثبت‌نام کنید.");
-//                    } else {
-//                        // ثبت‌نام دانشجو
-//                        System.out.println("ثبت‌نام شما موفقیت‌آمیز بود.");
-//                    }
+         //   return true;
+
+            Loan studentLoans=LOAN_SERVICE.FindStudentLoan(student,loanType);
+                    if ((currentDateTime.after(startPeriod1) && currentDateTime.before(endPeriod1))&&
+                        (studentLoans.getRegisterLoanDate().after(startPeriod1) && studentLoans.getRegisterLoanDate().before(endPeriod1))
+                        ){
+                        System.out.println("شما قبلاً در این دوره ثبت‌نام کرده‌اید و نمی‌توانید دوباره ثبت‌نام کنید.");
+                        return false;
+                    } else {
+                        // ثبت‌نام دانشجو
+                      return true;
+                    }
 
         } else
         {
-            //System.out.println("در حال حاضر ثبت‌ نام وام امکان‌پذیر نیست.");
-            return true;
+            System.out.println("در حال حاضر پنجره ثبت‌ نام وام بسته است.");
+            return false;
         }
     }
 
-
+//    public void checkIfStudentAlreadyRegistered(Loan loan,){
+//
+//
+//    }
 
     public void registerLoan(LoanTypeCondition loanType) {
         Student student=STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
-        Loan studentLoans=LOAN_SERVICE.FindStudentLoan(student,loanType.getLoanType());
+
+
         System.out.println(MESSAGE.getInputMessage("Card Number"));
         String cardNumber = INPUT.scanner.next();
         System.out.println(MESSAGE.getInputMessage("Expire Date"));
@@ -150,7 +159,8 @@ public class RegisterLoanMenu {
                 .remainLoanAmount(loanType.getAmount())
                 .startInstallments(calcInstallmentStartDate(student))
                 .student(student).build();
-        Set<Installment> installments = calculateInstallments(loanType.getAmount(), 100, loan);
+        LocalDate startDate = calcInstallmentStartDate(student).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        Set<Installment> installments = calculateInstallments(loanType.getAmount(), 100, loan,startDate);
         INSTALLMENT_SERVICE.setInstallment(installments);
 //        LOAN_SERVICE.registerLoan(loan);
 
@@ -193,10 +203,10 @@ public class RegisterLoanMenu {
 
     }
 
-    public int getRegisterTuitionLoan(LoanTypeCondition tuitionFeeLoan) {
+    public int getRegisterTuitionLoan(LoanTypeCondition tuitionFeeLoan,Student student) {
        if(USER_SESSION.getUniversityType()!= UniversityType.Rozane){
 
-        if (checkRequestDateIsValid()) {
+        if (checkRequestDateIsValid(tuitionFeeLoan,student)) {
             if (tuitionFeeLoan != null) {
                 System.out.println("""
                         تسهیلاتی که در قالب تسهیلات شهریه دانشجویی در اختیار شما قرار خواهد گرفت به مبلغ %s می باشد
@@ -220,15 +230,13 @@ public class RegisterLoanMenu {
        }
     }
 
-    public Set<Installment> calculateInstallments(double loanAmount, double annualIncreasePercentage,Loan loan)
+    public Set<Installment> calculateInstallments(double loanAmount, double annualIncreasePercentage,Loan loan,LocalDate startDate)
 
     {
         Set<Installment> installments=new HashSet<>();
         double monthlyInterestRate = (4.0 / 100) / 12;
         double initialInstallment = ( loanAmount * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, 60))
                 / (Math.pow(1 + monthlyInterestRate, 60) - 1);
-
-        LocalDate startDate = LocalDate.now();
         int count=0;
         for (int year = 1; year <= 5; year++) {
 
