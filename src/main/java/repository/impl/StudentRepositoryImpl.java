@@ -25,10 +25,10 @@ private final EntityManager entityManager;
 
     @Override
     public Student findStudentById(long id) {
-
-        return entityManager.find(Student.class,id);
-
-
+        entityManager.getTransaction().begin();
+        Student student = entityManager.find(Student.class, id);
+        entityManager.getTransaction().commit();
+        return student;
     }
 
     @Override

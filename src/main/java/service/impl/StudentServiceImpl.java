@@ -53,6 +53,8 @@ public class StudentServiceImpl implements StudentService {
             userSession.setTokenId(student.getId());
             userSession.setTokenName(student.getUserName());
             userSession.setEducationGrade(student.getEducationGrade());
+            userSession.setEntryYear(student.getEntryYear());
+            userSession.setIsDormitoryResident(student.isDormitoryResident());
             userSession.setMaritalStatus(student.getMaritalStatus());
             userSession.setUniversityType(student.getUniversityType());
             userSession.setCity(student.getResidenceCity());

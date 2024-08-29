@@ -41,7 +41,8 @@ public class InstallmentRepositoryImpl implements InstallmentRepository {
             }
             e.printStackTrace();
         } finally {
-            entityManager.close();
+
+           // entityManager.close();
         }
     }
 

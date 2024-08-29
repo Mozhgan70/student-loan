@@ -7,6 +7,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import repository.LoanRepository;
 
+import java.util.List;
+
 public class LoanRepositoryImpl implements LoanRepository {
     private final EntityManager entityManager;
 
@@ -31,13 +33,10 @@ public class LoanRepositoryImpl implements LoanRepository {
         );
         query.setParameter("student", student);
         query.setParameter("loanType", loanType);
-        return query.getSingleResult();
-
-
-//        TypedQuery<Staff> query = entityManager.createQuery("SELECT s FROM Staff s WHERE s.staffNumber = :staffNumber", Staff.class);
-//        query.setParameter("staffNumber", staffNumber);
-//        return query.getSingleResult();
-
-
+        List<Loan> resultLoanList = query.getResultList();
+        if (resultLoanList.isEmpty()) {
+           return null;
+        }
+            return resultLoanList.get(0);
     }
 }
