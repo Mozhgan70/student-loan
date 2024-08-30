@@ -2,6 +2,7 @@ package repository.impl;
 
 import entity.LoanTypeCondition;
 import entity.Student;
+import entity.enumration.City;
 import entity.enumration.EducationGrade;
 import entity.enumration.LoanType;
 import jakarta.persistence.EntityManager;
@@ -15,11 +16,15 @@ public class LoanTypeConditionRepositoryImpl implements LoanTypeConditionReposit
     }
 
     @Override
-    public LoanTypeCondition findByEducationandLoanType(EducationGrade education, LoanType loanType) {
-        String query = "SELECT s FROM LoanTypeCondition s WHERE s.educationGrade = :education and s.loanType = :loanType"  ;
+    public LoanTypeCondition findByEducationandLoanType(EducationGrade education, LoanType loanType,City city) {
+        String query = "SELECT s FROM LoanTypeCondition s WHERE s.educationGrade = :education " +
+                "And s.loanType = :loanType " +
+                "And (:city IS NULL OR s.city = :city)"  ;
+
         return entityManager.createQuery(query, LoanTypeCondition.class)
                 .setParameter("education", education)
                 .setParameter("loanType", loanType)
+                .setParameter("city",city.getCityName())
                 .getSingleResult();
     }
 }

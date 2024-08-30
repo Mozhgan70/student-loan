@@ -7,10 +7,7 @@ import entity.enumration.MaritalStatus;
 import entity.enumration.UniversityType;
 import menu.util.Input;
 import menu.util.Message;
-import service.InstallmentService;
-import service.LoanService;
-import service.LoanTypeConditionService;
-import service.StudentService;
+import service.*;
 import util.Common;
 import util.UserSession;
 
@@ -30,17 +27,18 @@ public class RegisterLoanMenu {
     private final Common COMMON;
     private final LoanService  LOAN_SERVICE;
     private final InstallmentService INSTALLMENT_SERVICE;
+    private final SpouseService SPOUSE_SERVICE;
 
-    public RegisterLoanMenu(Input input, Message message, UserSession userSession, LoanTypeConditionService loanTypeConditionService, StudentService studentService, Common common, LoanService loanService, InstallmentService installmentService) {
+    public RegisterLoanMenu(Input input, Message message, UserSession userSession, LoanTypeConditionService loanTypeConditionService, StudentService studentService, Common common, LoanService loanService, InstallmentService installmentService, SpouseService spouseService) {
         INPUT = input;
         MESSAGE = message;
-        this.USER_SESSION = userSession;
+        USER_SESSION = userSession;
         LOAN_TYPE_CONDITION_SERVICE = loanTypeConditionService;
-
         STUDENT_SERVICE = studentService;
         COMMON = common;
         LOAN_SERVICE = loanService;
         INSTALLMENT_SERVICE = installmentService;
+        SPOUSE_SERVICE = spouseService;
     }
 
     public void show() {
@@ -58,9 +56,8 @@ public class RegisterLoanMenu {
 
                 case "1":
 
-                    LoanTypeCondition tuitionFeeLoan =
-                            LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(USER_SESSION.getEducationGrade(),
-                                    LoanType.TUITION_FEE_LOAN);
+                    LoanTypeCondition tuitionFeeLoan = LOAN_TYPE_CONDITION_SERVICE
+                            .findByEducationandLoanType(USER_SESSION.getEducationGrade(), LoanType.TUITION_FEE_LOAN,student.getResidenceCity());
                     if (getCheckLoanCondition(tuitionFeeLoan,student) == 1)
                         registerLoan(tuitionFeeLoan);
                     break;
@@ -68,14 +65,14 @@ public class RegisterLoanMenu {
 
                     LoanTypeCondition educationLoan =
                             LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(USER_SESSION.getEducationGrade(),
-                                    LoanType.EDUCATION_LOAN);
+                                    LoanType.EDUCATION_LOAN,student.getResidenceCity());
                     if (getCheckLoanCondition(educationLoan,student) == 1)
                         registerLoan(educationLoan);
                     break;
                 case "3":
                     LoanTypeCondition housingLoan =
                             LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(USER_SESSION.getEducationGrade(),
-                                    LoanType.HOUSING_LOAN);
+                                    LoanType.HOUSING_LOAN,student.getResidenceCity());
                     if (getCheckLoanCondition(housingLoan,student) == 1)
                         registerLoan(housingLoan);
                     break;
@@ -115,29 +112,33 @@ public class RegisterLoanMenu {
         // چک کردن تاریخ جاری با دوره‌های ثبت‌نام
         if ((currentDateTime.after(startPeriod1) && currentDateTime.before(endPeriod1)) ||
                 (currentDateTime.after(startPeriod2) && currentDateTime.before(endPeriod2))) {
-         //   return true;
 
-            Loan studentLoans=LOAN_SERVICE.FindStudentLoan(student,loanType);
-            if(studentLoans!=null){
-                    if ((currentDateTime.after(startPeriod1) && currentDateTime.before(endPeriod1))&&
+            Loan studentLoans = LOAN_SERVICE.FindStudentLoan(student, loanType);
+
+            if (studentLoans != null) {
+                if (loanType != LoanType.HOUSING_LOAN){
+                if ((currentDateTime.after(startPeriod1) && currentDateTime.before(endPeriod1)) &&
                         (studentLoans.getRegisterLoanDate().after(startPeriod1) && studentLoans.getRegisterLoanDate().before(endPeriod1))
-                        ){
+                ) {
 
-                        System.out.println("شما قبلاً در این نیمسال ثبت ‌نام کرده‌اید و نمی‌توانید دوباره ثبت ‌نام کنید.");
+                    System.out.println("شما قبلاً در این نیمسال ثبت ‌نام کرده‌اید و نمی‌توانید دوباره ثبت ‌نام کنید.");
 
-                        return false;
-                    }else  if ((currentDateTime.after(startPeriod2) && currentDateTime.before(endPeriod2))&&
-                            (studentLoans.getRegisterLoanDate().after(startPeriod2) && studentLoans.getRegisterLoanDate().before(endPeriod2))
-                    ){
-                        System.out.println("شما قبلاً در این نیمسال ثبت ‌نام کرده‌اید و نمی‌توانید دوباره ثبت ‌نام کنید.");
-                        return false;
-                    }
+                    return false;
+                } else if ((currentDateTime.after(startPeriod2) && currentDateTime.before(endPeriod2)) &&
+                        (studentLoans.getRegisterLoanDate().after(startPeriod2) && studentLoans.getRegisterLoanDate().before(endPeriod2))
+                ) {
+                    System.out.println("شما قبلاً در این نیمسال ثبت ‌نام کرده‌اید و نمی‌توانید دوباره ثبت ‌نام کنید.");
+                    return false;
+                }
             }
+                else
+                {
+                    System.out.println("شما قبلا تسهیلات ودیعه مسکن را دریافت کرده اید و قادر به دریافت مجدد نیستید");
+                    return false;
+
+                }
+        }
             return true;
-//                    else {
-//                        // ثبت‌نام دانشجو
-//                      return true;
-//                    }
 
         } else
         {
@@ -149,26 +150,27 @@ public class RegisterLoanMenu {
 
 
     public void registerLoan(LoanTypeCondition loanType) {
+        Student student=STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
         if(loanType.getLoanType()==LoanType.HOUSING_LOAN){
+            System.out.println(MESSAGE.getInputMessage("National Code"));
+            String nationalCode= INPUT.scanner.next();
+            Loan loanByNationalCode = LOAN_SERVICE.findLoanByNationalCode(nationalCode);
+            if(loanByNationalCode!=null){
+                System.out.println("همسر شما وام ودیعه مسکن دریافت کرده است و شما قادر به دریافت این وام نخواهید بود");
+                return;
+            }
+
             System.out.println(MESSAGE.getInputMessage("First Name"));
             String name = INPUT.scanner.next();
             System.out.println(MESSAGE.getInputMessage("Last Name"));
             String lastName = INPUT.scanner.next();
-            System.out.println(MESSAGE.getInputMessage("National Code"));
-            String nationalCode= INPUT.scanner.next();
-            System.out.println("Is Your Husband Already A Student?");
-            System.out.println("1.Yes");
-            System.out.println("2.No");
-            int choice = INPUT.scanner.nextInt();
-            boolean isStudent=false;
-            if (choice == 1) { isStudent=true;}
-            else if (choice == 2) { isStudent=false;}
-
-
+            Spouse spouse=Spouse.builder().name(name)
+                    .lastName(lastName)
+                    .nationalCode(nationalCode)
+                    .build();
+           student.setSpouse(spouse);
         }
 
-
-        Student student=STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
         System.out.println(MESSAGE.getInputMessage("Card Number"));
         String cardNumber = INPUT.scanner.next();
         System.out.println(MESSAGE.getInputMessage("Expire Date"));

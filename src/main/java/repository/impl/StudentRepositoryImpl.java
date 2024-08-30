@@ -18,9 +18,9 @@ private final EntityManager entityManager;
     @Override
     public Student registerStudent(Student student) {
         entityManager.getTransaction().begin();
-        entityManager.persist(student);
+        Student mergedStudent = entityManager.merge(student);
         entityManager.getTransaction().commit();
-        return student;
+        return mergedStudent;
     }
 
     @Override

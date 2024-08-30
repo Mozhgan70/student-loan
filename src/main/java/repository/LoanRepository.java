@@ -7,5 +7,6 @@ import entity.enumration.LoanType;
 public interface LoanRepository {
 
     Loan registerLoan(Loan loan);
-    Loan FindStudentLoan(Student student, LoanType loanType);
+    Loan findStudentLoan(Student student, LoanType loanType);
+    Loan findLoanByNationalCode(String nationalCode);
 }

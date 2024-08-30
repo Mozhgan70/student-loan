@@ -22,6 +22,11 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public Loan FindStudentLoan(Student student, LoanType loanType) {
-        return loanRepository.FindStudentLoan(student,loanType);
+        return loanRepository.findStudentLoan(student,loanType);
+    }
+
+    @Override
+    public Loan findLoanByNationalCode(String nationalCode) {
+        return loanRepository.findLoanByNationalCode(nationalCode);
     }
 }

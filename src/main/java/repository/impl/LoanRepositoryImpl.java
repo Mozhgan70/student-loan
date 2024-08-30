@@ -25,7 +25,7 @@ public class LoanRepositoryImpl implements LoanRepository {
     }
 
     @Override
-    public Loan FindStudentLoan(Student student, LoanType loanType) {
+    public Loan findStudentLoan(Student student, LoanType loanType) {
         TypedQuery<Loan> query = entityManager.createQuery(
                 "select l from Loan l where l.student = :student and l.loanType.loanType = :loanType and l.registerLoanDate = " +
                         "(select max(l2.registerLoanDate) from Loan l2 where l2.student = :student and l2.loanType.loanType = :loanType)",
@@ -38,5 +38,23 @@ public class LoanRepositoryImpl implements LoanRepository {
            return null;
         }
             return resultLoanList.get(0);
+    }
+
+    @Override
+    public Loan findLoanByNationalCode(String nationalCode) {
+        String query = "SELECT l FROM Loan l " +
+                "LEFT JOIN FETCH l.student s " +
+                "WHERE s.nationalCode = :nationalCode AND l.loanType.loanType=:loanType";
+
+        TypedQuery<Loan> typedQuery = entityManager.createQuery(query, Loan.class);
+        typedQuery.setParameter("nationalCode", nationalCode);
+        typedQuery.setParameter("loanType", LoanType.HOUSING_LOAN);
+
+        List<Loan> loans = typedQuery.getResultList();
+        if (loans.isEmpty()) {
+            return null;
+        }
+        return loans.get(0);
+
     }
 }

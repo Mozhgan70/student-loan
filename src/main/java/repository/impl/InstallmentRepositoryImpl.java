@@ -19,18 +19,8 @@ public class InstallmentRepositoryImpl implements InstallmentRepository {
     public void setInstallment(Set<Installment> installments) {
         try {
             entityManager.getTransaction().begin();
-
-            int batchSize = 20;
-            int count = 0;
             for (Installment installment : installments) {
-//                Loan mergeLoan = entityManager.merge(installment.getLoan());
-//                installment.setLoan(mergeLoan);
                 entityManager.persist(installment);
-
-//                if (++count % batchSize == 0) {
-//                    entityManager.flush();
-//                    entityManager.clear();
-//                }
 
             }
             entityManager.getTransaction().commit();

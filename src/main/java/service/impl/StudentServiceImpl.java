@@ -22,7 +22,6 @@ public class StudentServiceImpl implements StudentService {
     public Student registerStudent(RegisterStudentParam param) {
      try{
         Student student = studentMapper.toEntity(param);
-        System.out.println(student.getResidenceCity());
         if (!studentRepository.existsByNationalCode(param.nationalCode())) {
             return studentRepository.registerStudent(student);
 
