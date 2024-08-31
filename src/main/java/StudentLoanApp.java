@@ -1,26 +1,10 @@
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import util.ApplicationContext;
-import util.jalaliCalender.JalaliDate;
-import util.jalaliCalender.JalaliDateUtil;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 
 public class StudentLoanApp {
 
 
     public static void main(String[] args) {
       ApplicationContext.getInstance().getMenu().show();
-
-
     }
 
 

@@ -10,6 +10,8 @@ import menu.util.Message;
 import service.*;
 import util.Common;
 import util.UserSession;
+import util.jalaliCalender.JalaliDate;
+import util.jalaliCalender.JalaliDateUtil;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -57,7 +59,7 @@ public class RegisterLoanMenu {
                 case "1":
 
                     LoanTypeCondition tuitionFeeLoan = LOAN_TYPE_CONDITION_SERVICE
-                            .findByEducationandLoanType(USER_SESSION.getEducationGrade(), LoanType.TUITION_FEE_LOAN,student.getResidenceCity());
+                            .findByEducationandLoanType(USER_SESSION.getEducationGrade(), LoanType.TUITION_FEE_LOAN,null);
                     if (getCheckLoanCondition(tuitionFeeLoan,student) == 1)
                         registerLoan(tuitionFeeLoan);
                     break;
@@ -65,14 +67,13 @@ public class RegisterLoanMenu {
 
                     LoanTypeCondition educationLoan =
                             LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(USER_SESSION.getEducationGrade(),
-                                    LoanType.EDUCATION_LOAN,student.getResidenceCity());
+                                    LoanType.EDUCATION_LOAN,null);
                     if (getCheckLoanCondition(educationLoan,student) == 1)
                         registerLoan(educationLoan);
                     break;
                 case "3":
                     LoanTypeCondition housingLoan =
-                            LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(USER_SESSION.getEducationGrade(),
-                                    LoanType.HOUSING_LOAN,student.getResidenceCity());
+                            LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(null,LoanType.HOUSING_LOAN,student.getResidenceCity());
                     if (getCheckLoanCondition(housingLoan,student) == 1)
                         registerLoan(housingLoan);
                     break;
@@ -151,8 +152,9 @@ public class RegisterLoanMenu {
 
     public void registerLoan(LoanTypeCondition loanType) {
         Student student=STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
+        System.out.println("please insert spouse data for register loan:");
         if(loanType.getLoanType()==LoanType.HOUSING_LOAN){
-            System.out.println(MESSAGE.getInputMessage("National Code"));
+            System.out.println(MESSAGE.getInputMessage("Spouse National Code"));
             String nationalCode= INPUT.scanner.next();
             Loan loanByNationalCode = LOAN_SERVICE.findLoanByNationalCode(nationalCode);
             if(loanByNationalCode!=null){
@@ -160,9 +162,9 @@ public class RegisterLoanMenu {
                 return;
             }
 
-            System.out.println(MESSAGE.getInputMessage("First Name"));
+            System.out.println(MESSAGE.getInputMessage("Spouse First Name"));
             String name = INPUT.scanner.next();
-            System.out.println(MESSAGE.getInputMessage("Last Name"));
+            System.out.println(MESSAGE.getInputMessage("Spouse Last Name"));
             String lastName = INPUT.scanner.next();
             Spouse spouse=Spouse.builder().name(name)
                     .lastName(lastName)
@@ -195,7 +197,7 @@ public class RegisterLoanMenu {
                 .remainLoanAmount(loanType.getAmount())
                 .startInstallments(calcInstallmentStartDate(student))
                 .student(student).build();
-        LocalDate startDate = calcInstallmentStartDate(student).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        Date startDate = calcInstallmentStartDate(student);
         Set<Installment> installments = calculateInstallments(loanType.getAmount(), 100, loan,startDate);
         INSTALLMENT_SERVICE.setInstallment(installments);
 
@@ -204,6 +206,7 @@ public class RegisterLoanMenu {
 
 
     public Date calcInstallmentStartDate(Student student)
+
     {
         Date entryYear=student.getEntryYear();
 //        Date sysDate = new Date();
@@ -271,7 +274,7 @@ public class RegisterLoanMenu {
     }
     }
 
-    public Set<Installment> calculateInstallments(double loanAmount, double annualIncreasePercentage,Loan loan,LocalDate startDate)
+    public Set<Installment> calculateInstallments(double loanAmount, double annualIncreasePercentage,Loan loan,Date startDate)
 
     {
         Set<Installment> installments=new HashSet<>();
@@ -279,21 +282,75 @@ public class RegisterLoanMenu {
         double initialInstallment = ( loanAmount * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, 60))
                 / (Math.pow(1 + monthlyInterestRate, 60) - 1);
         int count=0;
+        JalaliDate installmentStartDate = JalaliDateUtil.MiladyToShamsy(startDate);
+        int year_ = installmentStartDate.Year;
+        int month = installmentStartDate.Month;
+        int day = installmentStartDate.Day;
         for (int year = 1; year <= 5; year++) {
-
             for (int i = 0; i < 12; i++) {
-                startDate = startDate.plusMonths(1);
+                System.out.printf("Installment %d: %d/%02d/%02d%n", (year * 12 + i + 1), year_, month, day);
+
+                // Increment the month by 1
+                month++;
+
+                // Handle the transition from one year to the next
+                if (month > 12) {
+                    month = 1;
+                    year_++;
+                }
+
+                System.out.println("ssss"+installmentStartDate);
+                System.out.println(year_+" "+month+" "+day);
+                String idate=year_+"/"+month+"/"+day;
+              //  JalaliDateUtil.ShamsyToMilady(JalaliDate(idate))
+
+
+
+
+
+
+
+              // startDate = startDate.plusMonths(1);
                 count++;
                 Installment installment=Installment.builder().installmentAmount(initialInstallment)
-                        .installmentDate( Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                     //   .installmentDate( Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
                         .installmentNumber(count)
                         .loan(loan)
                         .build();
                 installments.add(installment);
             }
+
             initialInstallment *= (1 + annualIncreasePercentage / 100);
         }
       return installments;
     }
 
 }
+
+//public class JalaliInstallmentDates {
+//
+//    public static void main(String[] args) {
+//        // Starting Jalali date (1402/07/01)
+//        int year = 1402;
+//        int month = 7;
+//        int day = 1;
+//
+//        int totalYears = 5;  // 5 years
+//        int totalMonthsPerYear = 12;  // 12 months per year
+//
+//        for (int i = 0; i < totalYears; i++) {  // Loop through each year
+//            for (int j = 0; j < totalMonthsPerYear; j++) {  // Loop through each month
+//                System.out.printf("Installment %d: %d/%02d/%02d%n", (i * totalMonthsPerYear + j + 1), year, month, day);
+//
+//                // Increment the month by 1
+//                month++;
+//
+//                // Handle the transition from one year to the next
+//                if (month > 12) {
+//                    month = 1;
+//                    year++;
+//                }
+//            }
+//        }
+//    }
+//}
