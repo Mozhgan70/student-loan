@@ -25,6 +25,7 @@ public class Installment {
     @Column(name="installment_number")
     private Integer installmentNumber;
 
+    @Temporal(TemporalType.DATE)
     @Column(name="installment_date")
     private Date installmentDate;
 

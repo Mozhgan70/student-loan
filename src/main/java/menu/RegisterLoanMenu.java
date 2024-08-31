@@ -289,31 +289,21 @@ public class RegisterLoanMenu {
         for (int year = 1; year <= 5; year++) {
             for (int i = 0; i < 12; i++) {
                 System.out.printf("Installment %d: %d/%02d/%02d%n", (year * 12 + i + 1), year_, month, day);
-
-                // Increment the month by 1
                 month++;
-
-                // Handle the transition from one year to the next
                 if (month > 12) {
                     month = 1;
                     year_++;
                 }
 
-                System.out.println("ssss"+installmentStartDate);
-                System.out.println(year_+" "+month+" "+day);
-                String idate=year_+"/"+month+"/"+day;
-              //  JalaliDateUtil.ShamsyToMilady(JalaliDate(idate))
+               // System.out.println("ssss"+installmentStartDate);
 
-
-
-
-
-
-
-              // startDate = startDate.plusMonths(1);
+                JalaliDate resultDate = new JalaliDate(year_, month, day, 0, 0, 0);
+                Calendar calendar = JalaliDateUtil.ShamsyToMilady(resultDate);
+//                System.out.println(calendar.getTime());
+//                System.out.println(year_+" "+month+" "+day);
                 count++;
                 Installment installment=Installment.builder().installmentAmount(initialInstallment)
-                     //   .installmentDate( Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                        .installmentDate(calendar.getTime())
                         .installmentNumber(count)
                         .loan(loan)
                         .build();
@@ -327,30 +317,3 @@ public class RegisterLoanMenu {
 
 }
 
-//public class JalaliInstallmentDates {
-//
-//    public static void main(String[] args) {
-//        // Starting Jalali date (1402/07/01)
-//        int year = 1402;
-//        int month = 7;
-//        int day = 1;
-//
-//        int totalYears = 5;  // 5 years
-//        int totalMonthsPerYear = 12;  // 12 months per year
-//
-//        for (int i = 0; i < totalYears; i++) {  // Loop through each year
-//            for (int j = 0; j < totalMonthsPerYear; j++) {  // Loop through each month
-//                System.out.printf("Installment %d: %d/%02d/%02d%n", (i * totalMonthsPerYear + j + 1), year, month, day);
-//
-//                // Increment the month by 1
-//                month++;
-//
-//                // Handle the transition from one year to the next
-//                if (month > 12) {
-//                    month = 1;
-//                    year++;
-//                }
-//            }
-//        }
-//    }
-//}
