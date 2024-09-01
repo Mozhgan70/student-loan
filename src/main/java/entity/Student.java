@@ -115,6 +115,9 @@ public class Student {
     @Column(name="address")
     private String address;
 
+    @Column(name="contractNumber")
+    private String contractNumber;
+
 
     @NotNull(message = "University type cannot be null")
     @Enumerated(value =EnumType.STRING)

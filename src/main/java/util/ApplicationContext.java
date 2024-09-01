@@ -58,10 +58,11 @@ public class ApplicationContext {
         InstallmentRepository installmentRepository=new InstallmentRepositoryImpl(getEntityManager());
         SpouseRepository spouseRepository=new SpouseRepositoryImpl(getEntityManager());
 
+        InstallmentService installmentService=new InstallmentServiceImpl(installmentRepository);
         StudentService studentService=new  StudentServiceImpl(studentRepository,studentMapper, userSession);
         LoanTypeConditionService loanTypeConditionService=new LoanTypeConditionServiceImpl(loanTypeConditionRepository);
-        LoanService loanService=new LoanServiceImpl(loanRepository);
-        InstallmentService installmentService=new InstallmentServiceImpl(installmentRepository);
+        LoanService loanService=new LoanServiceImpl(loanRepository,userSession,input,installmentService);
+
         SpouseService spouseService=new SpouseSeviceImpl(spouseRepository);
 
 
