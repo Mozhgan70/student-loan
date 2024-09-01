@@ -1,6 +1,7 @@
 package service.impl;
 
-import dto.RegisterStudentParam;
+import dto.RegisterStudentDto;
+import dto.mapStruct.HousingLoanExtraDataMapper;
 import dto.mapStruct.StudentMapper;
 import entity.Student;
 import repository.StudentRepository;
@@ -11,6 +12,9 @@ public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
     private final UserSession userSession;
+
+
+
     public StudentServiceImpl(StudentRepository studentRepository, StudentMapper studentMapper, UserSession userSession) {
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;
@@ -19,7 +23,7 @@ public class StudentServiceImpl implements StudentService {
 
 
     @Override
-    public Student registerStudent(RegisterStudentParam param) {
+    public Student registerStudent(RegisterStudentDto param) {
      try{
         Student student = studentMapper.toEntity(param);
         if (!studentRepository.existsByNationalCode(param.nationalCode())) {

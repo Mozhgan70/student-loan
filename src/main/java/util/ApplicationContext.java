@@ -1,7 +1,10 @@
 package util;
 
 
+import dto.mapStruct.HousingLoanExtraDataMapper;
 import dto.mapStruct.StudentMapper;
+import entity.Spouse;
+import entity.Student;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -24,7 +27,7 @@ public class ApplicationContext {
     private EntityManagerFactory emf;
     private EntityManager em;
     private StudentMapper studentMapper = Mappers.getMapper(StudentMapper.class);
-
+    private HousingLoanExtraDataMapper housingLoanExtraDataMapper=Mappers.getMapper(HousingLoanExtraDataMapper.class);
     public static ApplicationContext getInstance() {
         if(applicationContext == null) {
             applicationContext = new ApplicationContext();
@@ -61,7 +64,7 @@ public class ApplicationContext {
         InstallmentService installmentService=new InstallmentServiceImpl(installmentRepository);
         StudentService studentService=new  StudentServiceImpl(studentRepository,studentMapper, userSession);
         LoanTypeConditionService loanTypeConditionService=new LoanTypeConditionServiceImpl(loanTypeConditionRepository);
-        LoanService loanService=new LoanServiceImpl(loanRepository,userSession,input,installmentService);
+        LoanService loanService=new LoanServiceImpl(loanRepository,userSession,input,installmentService,studentService,housingLoanExtraDataMapper);
 
         SpouseService spouseService=new SpouseSeviceImpl(spouseRepository);
 

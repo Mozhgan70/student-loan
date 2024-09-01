@@ -1,5 +1,6 @@
 package menu;
 
+import dto.HousingLoanExtraDataDto;
 import entity.*;
 import entity.enumration.Bank;
 import entity.enumration.LoanType;
@@ -44,8 +45,8 @@ public class RegisterLoanMenu {
     }
 
     public void show() {
-        Student student = STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
-        Date startDate = LOAN_SERVICE.calcInstallmentStartDate(student);
+
+        Date startDate = LOAN_SERVICE.calcInstallmentStartDate();
         Date currentDateTime = new Date();
         if (currentDateTime.before(startDate)) {
         RegisterLoanMenu:
@@ -64,7 +65,7 @@ public class RegisterLoanMenu {
 
                     LoanTypeCondition tuitionFeeLoan = LOAN_TYPE_CONDITION_SERVICE
                             .findByEducationandLoanType(USER_SESSION.getEducationGrade(), LoanType.TUITION_FEE_LOAN, null);
-                    if (LOAN_SERVICE.getCheckLoanCondition(tuitionFeeLoan, student) == 1)
+                    if (LOAN_SERVICE.getCheckLoanCondition(tuitionFeeLoan) == 1)
                         registerLoan(tuitionFeeLoan);
                     break;
                 case "2":
@@ -72,13 +73,13 @@ public class RegisterLoanMenu {
                     LoanTypeCondition educationLoan =
                             LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(USER_SESSION.getEducationGrade(),
                                     LoanType.EDUCATION_LOAN, null);
-                    if (LOAN_SERVICE.getCheckLoanCondition(educationLoan, student) == 1)
+                    if (LOAN_SERVICE.getCheckLoanCondition(educationLoan) == 1)
                         registerLoan(educationLoan);
                     break;
                 case "3":
                     LoanTypeCondition housingLoan =
-                            LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(null, LoanType.HOUSING_LOAN, student.getResidenceCity());
-                    if (LOAN_SERVICE.getCheckLoanCondition(housingLoan, student) == 1)
+                            LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(null, LoanType.HOUSING_LOAN,USER_SESSION.getCity());
+                    if (LOAN_SERVICE.getCheckLoanCondition(housingLoan) == 1)
                         registerLoan(housingLoan);
                     break;
                 case "4":
@@ -96,11 +97,12 @@ public class RegisterLoanMenu {
 
     }
 
-    public void registerLoan(LoanTypeCondition loanType) {
-        Student student = STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
+    public void registerLoan(LoanTypeCondition LoanTypeCondition) {
 
+        Student student = STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
         System.out.println("please insert spouse data for register loan:");
-        if(loanType.getLoanType() == LoanType.HOUSING_LOAN) {
+        if(LoanTypeCondition.getLoanType() == LoanType.HOUSING_LOAN) {
+
             // Collect Spouse Information
             System.out.println(MESSAGE.getInputMessage("Spouse National Code"));
             String nationalCode = INPUT.scanner.next();
@@ -116,7 +118,9 @@ public class RegisterLoanMenu {
 
             System.out.println(MESSAGE.getInputMessage("Your ContractNumber"));
             String contractNumber = INPUT.scanner.next();
-            LOAN_SERVICE.registerHousingLoan(student, nationalCode, name, lastName, address, contractNumber);
+
+            HousingLoanExtraDataDto housingLoanExtraDataDto=new HousingLoanExtraDataDto(student.getId(),name,lastName,nationalCode,address,contractNumber);
+            Student housing = LOAN_SERVICE.registerHousingLoan(housingLoanExtraDataDto);
         }
 
         System.out.println(MESSAGE.getInputMessage("Card Number"));
@@ -131,7 +135,7 @@ public class RegisterLoanMenu {
         System.out.println(MESSAGE.getInputMessage("Bank Name Your Bank Must Be one Of Following Banks"));
         Bank bank = COMMON.getEnumChoice(Bank.class);
 
-        LOAN_SERVICE.finalRegisterLoan(student, loanType, cardNumber, expireDate, cvv2, bank);
+        LOAN_SERVICE.finalRegisterLoan(LoanTypeCondition, cardNumber, expireDate, cvv2, bank);
     }
 
 

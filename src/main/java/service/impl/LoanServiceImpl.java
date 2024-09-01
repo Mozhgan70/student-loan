@@ -1,5 +1,7 @@
 package service.impl;
 
+import dto.HousingLoanExtraDataDto;
+import dto.mapStruct.HousingLoanExtraDataMapper;
 import entity.*;
 import entity.enumration.Bank;
 import entity.enumration.LoanType;
@@ -10,6 +12,7 @@ import menu.util.Message;
 import repository.LoanRepository;
 import service.InstallmentService;
 import service.LoanService;
+import service.StudentService;
 import util.UserSession;
 import util.jalaliCalender.JalaliDate;
 import util.jalaliCalender.JalaliDateUtil;
@@ -27,12 +30,17 @@ public class LoanServiceImpl implements LoanService {
     private final UserSession USER_SESSION;
     private final Input INPUT;
     private final InstallmentService INSTALLMENT_SERVICE;
-    public LoanServiceImpl(LoanRepository loanRepository, UserSession userSession, Input input, InstallmentService installmentService) {
+    private final StudentService STUDENT_SERVICE;
+    private final HousingLoanExtraDataMapper housingLoanExtraDataMapper;
+
+
+    public LoanServiceImpl(LoanRepository loanRepository, UserSession userSession, Input input, InstallmentService installmentService, StudentService studentService, HousingLoanExtraDataMapper housingLoanExtraDataMapper) {
         this.loanRepository = loanRepository;
         USER_SESSION = userSession;
         INPUT = input;
-
         INSTALLMENT_SERVICE = installmentService;
+        STUDENT_SERVICE = studentService;
+        this.housingLoanExtraDataMapper = housingLoanExtraDataMapper;
     }
 
     @Override
@@ -113,7 +121,8 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public int getCheckLoanCondition(LoanTypeCondition loanTypeCondition, Student student) {
+    public int getCheckLoanCondition(LoanTypeCondition loanTypeCondition) {
+        Student student = STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
         if(loanTypeCondition.getLoanType()==LoanType.TUITION_FEE_LOAN && USER_SESSION.getUniversityType()== UniversityType.Rozane){
             System.out.println("این وام متعلق به دانشجویان شهریه پرداز است");
             return 0;
@@ -147,9 +156,9 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public Date calcInstallmentStartDate(Student student)
+    public Date calcInstallmentStartDate()
     {
-
+        Student student = STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
         Date entryYear=student.getEntryYear();
         LocalDate localDbDate = entryYear.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDate updatedEntryYearDate=localDbDate;
@@ -213,24 +222,25 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public void registerHousingLoan(Student student,String nationalCode, String name, String lastName, String address, String contractNumber) {
-        Loan loanByNationalCode = findLoanByNationalCode(nationalCode);
+    public Student registerHousingLoan(HousingLoanExtraDataDto housingLoanExtraDataDto) {
+
+        Loan loanByNationalCode = findLoanByNationalCode(housingLoanExtraDataDto.spouseNationalCode());
         if(loanByNationalCode != null) {
             System.out.println("همسر شما وام ودیعه مسکن دریافت کرده است و شما قادر به دریافت این وام نخواهید بود");
-            return;
+            return null;
         }
-        Spouse spouse = Spouse.builder().name(name)
-                .lastName(lastName)
-                .nationalCode(nationalCode)
-                .build();
+        Student student = housingLoanExtraDataMapper.toStudent(housingLoanExtraDataDto);
+        Spouse spouse = housingLoanExtraDataMapper.toSpouse(housingLoanExtraDataDto);
         student.setSpouse(spouse);
-        student.setContractNumber(contractNumber);
-        student.setAddress(address);
+        return student;
+//        student.setContractNumber(contractNumber);
+//        student.setAddress(address);
 
     }
 
     @Override
-    public void finalRegisterLoan(Student student, LoanTypeCondition loanType, String cardNumber, String expireDate, int cvv2, Bank bank) {
+    public void finalRegisterLoan(LoanTypeCondition LoanTypeCondition, String cardNumber, String expireDate, int cvv2, Bank bank) {
+        Student student = STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
         Card card = Card.builder()
                 .cardNumber(cardNumber)
                 .expireDate(expireDate)
@@ -240,16 +250,16 @@ public class LoanServiceImpl implements LoanService {
 
         Loan loan = Loan.builder()
                 .card(card)
-                .loanType(loanType)
+                .loanType(LoanTypeCondition)
                 .paymentDate(new Date())
                 .registerLoanDate(new Date())
-                .remainLoanAmount(loanType.getAmount())
-                .startInstallments(calcInstallmentStartDate(student))
+                .remainLoanAmount(LoanTypeCondition.getAmount())
+                .startInstallments(calcInstallmentStartDate())
                 .student(student)
                 .build();
 
-        Date startDate = calcInstallmentStartDate(student);
-        Set<Installment> installments = calculateInstallments(loanType.getAmount(), 100, loan, startDate);
+        Date startDate = calcInstallmentStartDate();
+        Set<Installment> installments = calculateInstallments(LoanTypeCondition.getAmount(), 100, loan, startDate);
         INSTALLMENT_SERVICE.setInstallment(installments);
 
         // Further processing if required

@@ -6,7 +6,7 @@ import entity.enumration.MaritalStatus;
 import entity.enumration.UniversityType;
 import java.util.Date;
 
-public record RegisterStudentParam (
+public record RegisterStudentDto(
 
             String name,
             String lastName,

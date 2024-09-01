@@ -1,5 +1,5 @@
 package menu;
-import dto.RegisterStudentParam;
+import dto.RegisterStudentDto;
 import entity.Student;
 import entity.enumration.City;
 import entity.enumration.EducationGrade;
@@ -12,10 +12,8 @@ import util.Common;
 import util.jalaliCalender.JalaliDate;
 import util.jalaliCalender.JalaliDateUtil;
 
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.regex.Pattern;
 
 public class SignupMenu {
@@ -118,7 +116,7 @@ public class SignupMenu {
         if (choice == 1) { isDormitoryResident=true;}
         else if (choice == 2) { isDormitoryResident=false;}
 
-        RegisterStudentParam studentParam=new RegisterStudentParam(
+        RegisterStudentDto studentParam=new RegisterStudentDto(
                 name,
                 lastName,
                 fatherName,

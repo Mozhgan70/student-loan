@@ -1,6 +1,5 @@
 package repository.impl;
 
-import dto.RegisterStudentParam;
 import entity.Student;
 import jakarta.persistence.EntityManager;
 import repository.StudentRepository;

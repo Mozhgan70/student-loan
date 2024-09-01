@@ -1,5 +1,6 @@
 package service;
 
+import dto.HousingLoanExtraDataDto;
 import entity.Installment;
 import entity.Loan;
 import entity.LoanTypeCondition;
@@ -17,14 +18,14 @@ public interface LoanService {
 
     Loan findLoanByNationalCode(String nationalCode);
 
-    int getCheckLoanCondition(LoanTypeCondition loanTypeCondition, Student student);
+    int getCheckLoanCondition(LoanTypeCondition loanTypeCondition);
 
     boolean checkRequestDateIsValid(LoanType loanType, Student student);
 
-    Date calcInstallmentStartDate(Student student);
+    Date calcInstallmentStartDate();
     Set<Installment> calculateInstallments(double loanAmount, double annualIncreasePercentage, Loan loan, Date startDate);
-    void finalRegisterLoan(Student student, LoanTypeCondition loanType, String cardNumber, String expireDate, int cvv2, Bank bank);
-    void registerHousingLoan(Student student, String nationalCode, String name, String lastName, String address, String contractNumber);
+    void finalRegisterLoan(LoanTypeCondition LoanTypeCondition, String cardNumber, String expireDate, int cvv2, Bank bank);
+    Student registerHousingLoan(HousingLoanExtraDataDto housingLoanExtraDataDto);
 }
 
 
