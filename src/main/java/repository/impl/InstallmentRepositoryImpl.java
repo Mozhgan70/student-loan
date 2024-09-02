@@ -3,36 +3,43 @@ package repository.impl;
 import entity.Installment;
 import entity.Loan;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import repository.InstallmentRepository;
 
 import java.util.Set;
 
 public class InstallmentRepositoryImpl implements InstallmentRepository {
-    private final EntityManager entityManager;
+    private final EntityManagerFactory entityManagerFactory;
+    private EntityManager entityManager;
+    public InstallmentRepositoryImpl(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
 
-    public InstallmentRepositoryImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
     }
-
+    public EntityManager getEntityManager() {
+        if (entityManager == null) {
+            entityManager = entityManagerFactory.createEntityManager();
+        }
+        return entityManager;
+    }
 
     @Override
     public void setInstallment(Set<Installment> installments) {
         try {
-            entityManager.getTransaction().begin();
+            getEntityManager().getTransaction().begin();
             for (Installment installment : installments) {
-                entityManager.persist(installment);
+                getEntityManager().persist(installment);
 
             }
-            entityManager.getTransaction().commit();
+            getEntityManager().getTransaction().commit();
         }
         catch (Exception e) {
-            if (entityManager.getTransaction() != null) {
-                entityManager.getTransaction().rollback();
+            if (getEntityManager().getTransaction() != null) {
+                getEntityManager().getTransaction().rollback();
             }
             e.printStackTrace();
         } finally {
 
-           // entityManager.close();
+            getEntityManager().close();
         }
     }
 

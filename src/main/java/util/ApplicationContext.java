@@ -1,6 +1,7 @@
 package util;
 
 
+import dto.mapStruct.CardMapper;
 import dto.mapStruct.LoanMapper;
 import dto.mapStruct.StudentMapper;
 import jakarta.persistence.EntityManager;
@@ -26,7 +27,7 @@ public class ApplicationContext {
     private EntityManager em;
     private StudentMapper studentMapper = Mappers.getMapper(StudentMapper.class);
     private LoanMapper loanMapper=Mappers.getMapper(LoanMapper.class);
-
+    private CardMapper cardMapper=Mappers.getMapper(CardMapper.class);
 
 
     public static ApplicationContext getInstance() {
@@ -56,24 +57,25 @@ public class ApplicationContext {
         Input input = new Input();
         Message message = new Message();
         Common common=new Common(input,message);
-        StudentRepository studentRepository=new StudentRepositoryImpl(getEntityManager());
-        LoanTypeConditionRepository loanTypeConditionRepository=new LoanTypeConditionRepositoryImpl(getEntityManager());
-        LoanRepository loanRepository=new LoanRepositoryImpl(getEntityManager());
-        InstallmentRepository installmentRepository=new InstallmentRepositoryImpl(getEntityManager());
-        SpouseRepository spouseRepository=new SpouseRepositoryImpl(getEntityManager());
+        StudentRepository studentRepository=new StudentRepositoryImpl(getEntityManagerFactory());
+        LoanTypeConditionRepository loanTypeConditionRepository=new LoanTypeConditionRepositoryImpl(getEntityManagerFactory());
+        LoanRepository loanRepository=new LoanRepositoryImpl(getEntityManagerFactory());
+        InstallmentRepository installmentRepository=new InstallmentRepositoryImpl(getEntityManagerFactory());
+        SpouseRepository spouseRepository=new SpouseRepositoryImpl(getEntityManagerFactory());
+        CardRepository cardRepository=new CardRepositoryImpl(getEntityManagerFactory());
 
         InstallmentService installmentService=new InstallmentServiceImpl(installmentRepository);
         StudentService studentService=new  StudentServiceImpl(studentRepository,studentMapper, userSession);
         LoanTypeConditionService loanTypeConditionService=new LoanTypeConditionServiceImpl(loanTypeConditionRepository);
         LoanService loanService=new LoanServiceImpl(loanRepository,userSession,input,installmentService,studentService,loanMapper);
-
+        CardService cardService=new CardServiceImpl(cardRepository);
         SpouseService spouseService=new SpouseSeviceImpl(spouseRepository);
 
 
 
         SignupMenu signupMenu=new SignupMenu(input,message,studentService,common);
         RegisterLoanMenu registerLoanMenu=new RegisterLoanMenu(input,message,userSession,loanTypeConditionService
-                ,studentService,common,loanService,installmentService,spouseService);
+                ,studentService,common,loanService,cardService,cardMapper);
         PaymentMenu paymentMenu=new PaymentMenu(input,message);
         LoginSubmenu loginSubmenu=new LoginSubmenu(input,message,registerLoanMenu,paymentMenu);
         LoginMenu loginMenu=new LoginMenu(input,message,loginSubmenu, userSession,studentService);

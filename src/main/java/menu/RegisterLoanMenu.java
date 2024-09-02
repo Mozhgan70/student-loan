@@ -3,6 +3,7 @@ package menu;
 import dto.CardDto;
 import dto.LoanRegistrationDto;
 import dto.SpouseDto;
+import dto.mapStruct.CardMapper;
 import entity.*;
 import entity.enumration.Bank;
 import entity.enumration.LoanType;
@@ -13,6 +14,7 @@ import util.Common;
 import util.UserSession;
 
 import java.util.Date;
+import java.util.List;
 
 public class RegisterLoanMenu {
     private final Input INPUT;
@@ -22,10 +24,11 @@ public class RegisterLoanMenu {
     private final StudentService STUDENT_SERVICE;
     private final Common COMMON;
     private final LoanService  LOAN_SERVICE;
-    private final InstallmentService INSTALLMENT_SERVICE;
-    private final SpouseService SPOUSE_SERVICE;
+    private final CardService CARD_SERVICE;
+    private final CardMapper cardMapper;
 
-    public RegisterLoanMenu(Input input, Message message, UserSession userSession, LoanTypeConditionService loanTypeConditionService, StudentService studentService, Common common, LoanService loanService, InstallmentService installmentService, SpouseService spouseService) {
+
+    public RegisterLoanMenu(Input input, Message message, UserSession userSession, LoanTypeConditionService loanTypeConditionService, StudentService studentService, Common common, LoanService loanService, CardService cardService, CardMapper cardMapper) {
         INPUT = input;
         MESSAGE = message;
         USER_SESSION = userSession;
@@ -33,8 +36,8 @@ public class RegisterLoanMenu {
         STUDENT_SERVICE = studentService;
         COMMON = common;
         LOAN_SERVICE = loanService;
-        INSTALLMENT_SERVICE = installmentService;
-        SPOUSE_SERVICE = spouseService;
+        CARD_SERVICE = cardService;
+        this.cardMapper = cardMapper;
     }
 
     public void show() {
@@ -115,29 +118,72 @@ public class RegisterLoanMenu {
        }
 
        // Get card data
-       System.out.println(MESSAGE.getInputMessage("Card Number"));
-       String cardNumber = INPUT.scanner.next();
-       System.out.println(MESSAGE.getInputMessage("Expire Date (format: YYYY-MM)"));
-       String expireDate = INPUT.scanner.next();
-       System.out.println(MESSAGE.getInputMessage("CVV2"));
-       int cvv2 = INPUT.scanner.nextInt();
-       System.out.println(MESSAGE.getInputMessage("Bank Name (Choose from the list)"));
-       Bank bank = COMMON.getEnumChoice(Bank.class);
+       CardDto cardDTO=getCard();
 
-       CardDto cardDTO = new CardDto(expireDate,cardNumber,cvv2,bank);
-
-       // Create LoanRegistrationDto
        LoanRegistrationDto loanRegistrationDTO = new LoanRegistrationDto(
                loanType, spouseDTO, cardDTO, address, contractNumber
        );
 
-       // Register loan
+       // Register loan and set installments
        try {
            LOAN_SERVICE.registerLoan(loanRegistrationDTO);
            System.out.println("Loan registered successfully.");
        } catch (IllegalArgumentException e) {
            System.out.println(e.getMessage());
        }
+   }
+
+
+
+   public CardDto getCard(){
+       List<Card> cards = CARD_SERVICE.selectAllStudentCard(USER_SESSION.getTokenId());
+
+
+       if(cards!=null && cards.size()!=0) {
+           System.out.println("شماره کارت هایی که در ارتباط با تسهیلات دیگر " +
+                   "در سیستم ثبت شده است آیا مایل به انتخاب از میان آن ها می باشید؟");
+           System.out.println("1.Yes");
+           System.out.println("2.No");
+           int choice = INPUT.scanner.nextInt();
+           if (choice == 1) {
+               System.out.println("Select a Bank Card number:");
+               for (Card card : cards) {
+                   System.out.println(card.getId() + "----> " + card.getCardNumber());
+
+               }
+               int selectedCard = INPUT.scanner.nextInt();
+               for (Card card : cards) {
+                   if (card.getId() == selectedCard) {
+                       CardDto cardDto = cardMapper.toDTO(card);
+                       return cardDto;
+                   }
+               }
+           }
+       }
+
+
+       System.out.println(MESSAGE.getInputMessage("Bank Name (Choose from the list)"));
+       Bank bank = COMMON.getEnumChoice(Bank.class);
+       String cardNumber;
+
+       while (true) {
+           System.out.println(MESSAGE.getInputMessage("Card Number"));
+           cardNumber = INPUT.scanner.next();
+           if (cardNumber.startsWith(bank.getPreNumber())) {
+               break;
+           } else {
+               System.out.println("شماره کارت بانک " + bank.getBankName() + " باید با " + bank.getPreNumber() + " شروع شود.");
+               System.out.println("لطفا شماره کارت صحیح را وارد کنید.");
+           }
+       }
+       System.out.println(MESSAGE.getInputMessage("Expire Date (format: YYYY-MM)"));
+       String expireDate = INPUT.scanner.next();
+       System.out.println(MESSAGE.getInputMessage("CVV2"));
+       int cvv2 = INPUT.scanner.nextInt();
+
+
+       CardDto cardDTO = new CardDto(expireDate,cardNumber,cvv2,bank);
+       return cardDTO;
    }
    }
 

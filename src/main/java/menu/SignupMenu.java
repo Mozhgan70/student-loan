@@ -81,6 +81,8 @@ public class SignupMenu {
 
 
     public void registerStudent() {
+        Student student=null;
+        do{
         System.out.println(MESSAGE.getInputMessage("First Name"));
         String name = INPUT.scanner.next();
         System.out.println(MESSAGE.getInputMessage("Last Name"));
@@ -133,14 +135,14 @@ public class SignupMenu {
                 residenceCity,
                 isDormitoryResident);
 
-        Student student = STUDENT_SERVICE.registerStudent(studentParam);
-        if(student!=null){
-            System.out.println("Student is registered");
-        }
-        else{
 
-            System.out.println("Student is already exist");
+         student = STUDENT_SERVICE.registerStudent(studentParam);
+        if (student != null) {
+            System.out.println("Student is registered successfully.");
+        } else {
+            System.out.println("Registration failed");
+            System.out.println("Please correct the errors and try again.");
         }
-
-    }
+    } while (student == null);
+}
 }
