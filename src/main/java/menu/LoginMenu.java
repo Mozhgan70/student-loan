@@ -1,5 +1,6 @@
 package menu;
 
+import dto.LoginDto;
 import menu.util.Input;
 import menu.util.Message;
 
@@ -14,8 +15,8 @@ public class LoginMenu {
     private final UserSession USER_SESSION;
     private final StudentService STUDENT_SERVICE;
 
-    public LoginMenu(Input INPUT, Message MESSAGE, LoginSubmenu loginSubmenu
-            , UserSession userSession, StudentService studentService) {
+    public LoginMenu(Input INPUT, Message MESSAGE, LoginSubmenu loginSubmenu,UserSession userSession, StudentService studentService)
+    {
         this.INPUT = INPUT;
         this.MESSAGE = MESSAGE;
         this.LOGIN_SUBMENU = loginSubmenu;
@@ -53,7 +54,8 @@ public class LoginMenu {
         String username = INPUT.scanner.next();
         System.out.println(MESSAGE.getInputMessage("password"));
         String password = INPUT.scanner.next();
-        if (STUDENT_SERVICE.login(username, password)) {
+        LoginDto loginDto=new LoginDto(username,password);
+        if (STUDENT_SERVICE.login(loginDto)) {
             System.out.println(MESSAGE.getSuccessfulMessage("login "));
             LOGIN_SUBMENU.show();
         } else {

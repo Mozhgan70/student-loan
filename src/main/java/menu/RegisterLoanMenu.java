@@ -1,25 +1,18 @@
 package menu;
 
-import dto.HousingLoanExtraDataDto;
+import dto.CardDto;
+import dto.LoanRegistrationDto;
+import dto.SpouseDto;
 import entity.*;
 import entity.enumration.Bank;
 import entity.enumration.LoanType;
-import entity.enumration.MaritalStatus;
-import entity.enumration.UniversityType;
 import menu.util.Input;
 import menu.util.Message;
 import service.*;
 import util.Common;
 import util.UserSession;
-import util.jalaliCalender.JalaliDate;
-import util.jalaliCalender.JalaliDateUtil;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 public class RegisterLoanMenu {
     private final Input INPUT;
@@ -45,8 +38,8 @@ public class RegisterLoanMenu {
     }
 
     public void show() {
-
-        Date startDate = LOAN_SERVICE.calcInstallmentStartDate();
+        Student student = STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
+        Date startDate = LOAN_SERVICE.calcInstallmentStartDate(student);
         Date currentDateTime = new Date();
         if (currentDateTime.before(startDate)) {
         RegisterLoanMenu:
@@ -97,50 +90,62 @@ public class RegisterLoanMenu {
 
     }
 
-    public void registerLoan(LoanTypeCondition LoanTypeCondition) {
+   public void registerLoan(LoanTypeCondition loanType) {
+       SpouseDto spouseDTO = null;
+       String address = null;
+       String contractNumber = null;
 
-        Student student = STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
-        System.out.println("please insert spouse data for register loan:");
-        if(LoanTypeCondition.getLoanType() == LoanType.HOUSING_LOAN) {
+       if (loanType.getLoanType() == LoanType.HOUSING_LOAN) {
+           System.out.println("Please insert spouse data for loan registration:");
 
-            // Collect Spouse Information
-            System.out.println(MESSAGE.getInputMessage("Spouse National Code"));
-            String nationalCode = INPUT.scanner.next();
+           // Get spouse data
+           System.out.println(MESSAGE.getInputMessage("Spouse National Code"));
+           String nationalCode = INPUT.scanner.next();
+           System.out.println(MESSAGE.getInputMessage("Spouse First Name"));
+           String name = INPUT.scanner.next();
+           System.out.println(MESSAGE.getInputMessage("Spouse Last Name"));
+           String lastName = INPUT.scanner.next();
 
-            System.out.println(MESSAGE.getInputMessage("Spouse First Name"));
-            String name = INPUT.scanner.next();
+           spouseDTO = new SpouseDto(name, lastName, nationalCode);
 
-            System.out.println(MESSAGE.getInputMessage("Spouse Last Name"));
-            String lastName = INPUT.scanner.next();
+           System.out.println(MESSAGE.getInputMessage("Your Address"));
+           address = INPUT.scanner.next();
+           System.out.println(MESSAGE.getInputMessage("Your Contract Number"));
+           contractNumber = INPUT.scanner.next();
+       }
 
-            System.out.println(MESSAGE.getInputMessage("Your Address"));
-            String address = INPUT.scanner.next();
+       // Get card data
+       System.out.println(MESSAGE.getInputMessage("Card Number"));
+       String cardNumber = INPUT.scanner.next();
+       System.out.println(MESSAGE.getInputMessage("Expire Date (format: YYYY-MM)"));
+       String expireDate = INPUT.scanner.next();
+       System.out.println(MESSAGE.getInputMessage("CVV2"));
+       int cvv2 = INPUT.scanner.nextInt();
+       System.out.println(MESSAGE.getInputMessage("Bank Name (Choose from the list)"));
+       Bank bank = COMMON.getEnumChoice(Bank.class);
 
-            System.out.println(MESSAGE.getInputMessage("Your ContractNumber"));
-            String contractNumber = INPUT.scanner.next();
+       CardDto cardDTO = new CardDto(expireDate,cardNumber,cvv2,bank);
 
-            HousingLoanExtraDataDto housingLoanExtraDataDto=new HousingLoanExtraDataDto(student.getId(),name,lastName,nationalCode,address,contractNumber);
-            Student housing = LOAN_SERVICE.registerHousingLoan(housingLoanExtraDataDto);
-        }
+       // Create LoanRegistrationDto
+       LoanRegistrationDto loanRegistrationDTO = new LoanRegistrationDto(
+               loanType, spouseDTO, cardDTO, address, contractNumber
+       );
 
-        System.out.println(MESSAGE.getInputMessage("Card Number"));
-        String cardNumber = INPUT.scanner.next();
-
-        System.out.println(MESSAGE.getInputMessage("Expire Date"));
-        String expireDate = INPUT.scanner.next();
-
-        System.out.println(MESSAGE.getInputMessage("CVV2"));
-        int cvv2 = INPUT.scanner.nextInt();
-
-        System.out.println(MESSAGE.getInputMessage("Bank Name Your Bank Must Be one Of Following Banks"));
-        Bank bank = COMMON.getEnumChoice(Bank.class);
-
-        LOAN_SERVICE.finalRegisterLoan(LoanTypeCondition, cardNumber, expireDate, cvv2, bank);
-    }
+       // Register loan
+       try {
+           LOAN_SERVICE.registerLoan(loanRegistrationDTO);
+           System.out.println("Loan registered successfully.");
+       } catch (IllegalArgumentException e) {
+           System.out.println(e.getMessage());
+       }
+   }
+   }
 
 
 
 
 
-}
+
+
+
 

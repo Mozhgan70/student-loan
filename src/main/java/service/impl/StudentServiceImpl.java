@@ -1,7 +1,7 @@
 package service.impl;
 
+import dto.LoginDto;
 import dto.RegisterStudentDto;
-import dto.mapStruct.HousingLoanExtraDataMapper;
 import dto.mapStruct.StudentMapper;
 import entity.Student;
 import repository.StudentRepository;
@@ -50,8 +50,8 @@ public class StudentServiceImpl implements StudentService {
 
 
     @Override
-    public boolean login(String username, String password) {
-        Student student = studentRepository.findByUsernameAndPassword(username, password);
+    public boolean login(LoginDto loginDto) {
+        Student student = studentRepository.findByUsernameAndPassword(loginDto.userName(), loginDto.password());
         if (student != null) {
             userSession.setTokenId(student.getId());
             userSession.setTokenName(student.getUserName());
