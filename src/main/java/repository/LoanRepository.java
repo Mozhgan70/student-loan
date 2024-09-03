@@ -11,6 +11,6 @@ public interface LoanRepository {
     Loan registerLoan(Loan loan);
     Loan findStudentLoan(Student student, LoanType loanType);
     Loan findLoanByNationalCode(String nationalCode);
-    List<Loan> getAllStudentLoan(Student student);
+    List<Loan> getAllStudentLoan(Long studentId);
 
 }

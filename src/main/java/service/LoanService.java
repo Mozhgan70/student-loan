@@ -25,7 +25,7 @@ public interface LoanService {
     Date calcInstallmentStartDate(Student student);
     Set<Installment> calculateInstallments(double loanAmount, double annualIncreasePercentage, Loan loan, Date startDate);
     Boolean registerLoan(LoanRegistrationDto loanRegistrationDTO);
-    List<Loan> getAllStudentLoan(Student student);
+    List<Loan> getAllStudentLoan(Long studentId);
 
 }
 

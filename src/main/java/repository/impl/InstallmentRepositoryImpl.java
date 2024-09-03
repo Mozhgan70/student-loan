@@ -6,6 +6,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import repository.InstallmentRepository;
 
+import java.util.List;
 import java.util.Set;
 
 public class InstallmentRepositoryImpl implements InstallmentRepository {
@@ -43,6 +44,26 @@ public class InstallmentRepositoryImpl implements InstallmentRepository {
         }
     }
 
+    @Override
+    public List<Installment> getInstallmentsByLoanIdAndPaidStatus(Long loanId,Boolean paidStatus) {
+        String hql = "SELECT i FROM Installment i WHERE i.loan.id = :loanId and i.isPaid=:paidStatus order by i.installmentNumber";
+        List<Installment> resultList = getEntityManager().createQuery(hql, Installment.class)
+                .setParameter("loanId", loanId)
+                .setParameter("paidStatus", paidStatus)
+                .getResultList();
+        if(resultList!=null && resultList.size()>0) {
+            return resultList;
+        }
+        return null;
+    }
+
+    @Override
+    public void installmentPayment(Installment installment) {
+        entityManager.getTransaction().begin();
+        entityManager.merge(installment);
+        entityManager.getTransaction().commit();
+
+    }
 
 
 }

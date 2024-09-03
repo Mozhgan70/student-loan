@@ -36,4 +36,16 @@ public class CardRepositoryImpl implements CardRepository {
         query.setParameter("studentId", stdId);
         return query.getResultList();
     }
+
+    @Override
+    public Card findCard(Card card) {
+        TypedQuery<Card> query = entityManager.createQuery("select c from Card c where c.cardNumber=:cardNumber" +
+                " and c.cvv2=:cvv2 and c.expireDate=:expireDate", Card.class);
+        query.setParameter("cardNumber",card.getCardNumber());
+        query.setParameter("cvv2",card.getCvv2());
+        query.setParameter("expireDate",card.getExpireDate());
+        List<Card> resultList = query.getResultList();
+        if (resultList!=null) return resultList.get(0);
+        return null;
+    }
 }

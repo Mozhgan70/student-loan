@@ -172,7 +172,7 @@ public class RegisterLoanMenu {
            }
        }
 
-       System.out.println(MESSAGE.getInputMessage("Bank Name (Choose from the list)"));
+       System.out.println(MESSAGE.getInputMessage("کارت باید متعلق به یکی از بانک های زیر باشد لطفا بانک مورد نظر خود را انتخاب کنید"));
        Bank bank = COMMON.getEnumChoice(Bank.class);
        String cardNumber;
 
@@ -186,7 +186,7 @@ public class RegisterLoanMenu {
                System.out.println("لطفا شماره کارت صحیح را وارد کنید.");
            }
        }
-       System.out.println(MESSAGE.getInputMessage("Expire Date (format: YYYY-MM)"));
+       System.out.println(MESSAGE.getInputMessage("Expire Date (format: YY/MM)"));
        String expireDate = INPUT.scanner.next();
        System.out.println(MESSAGE.getInputMessage("CVV2"));
        int cvv2 = INPUT.scanner.nextInt();

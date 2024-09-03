@@ -271,8 +271,8 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<Loan> getAllStudentLoan(Student student) {
-        return List.of();
+    public List<Loan> getAllStudentLoan(Long studentId) {
+        return loanRepository.getAllStudentLoan(studentId);
     }
 
 

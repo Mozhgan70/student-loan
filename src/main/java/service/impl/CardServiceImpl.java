@@ -18,4 +18,9 @@ public class CardServiceImpl implements CardService {
     public List<Card> selectAllStudentCard(Long stdId) {
         return cardRepository.selectAllStudentCard(stdId);
     }
+
+    @Override
+    public Card findCard(Card card) {
+        return cardRepository.findCard(card);
+    }
 }

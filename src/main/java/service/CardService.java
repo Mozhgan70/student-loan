@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface CardService {
     public List<Card> selectAllStudentCard(Long stdId);
+    Card findCard(Card card);
+
 }
