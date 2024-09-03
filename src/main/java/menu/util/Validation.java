@@ -7,7 +7,7 @@ import java.util.InputMismatchException;
 public class Validation {
     Input INPUT = new Input();
     Message MESSAGE = new Message();
-    private String getStringInputWithValidation(String prompt) {
+    public String getStringInputWithValidation(String prompt) {
         String input;
         while (true) {
             System.out.println(MESSAGE.getInputMessage(prompt));
@@ -18,7 +18,7 @@ public class Validation {
         }
     }
 
-    private String getValidCardNumber(Bank bank) {
+    public String getValidCardNumber(Bank bank) {
         String cardNumber;
         while (true) {
             System.out.println(MESSAGE.getInputMessage("Card Number"));
@@ -32,10 +32,10 @@ public class Validation {
         }
     }
 
-    private int getIntInputValidation(int prompt) {
+    public int getIntInputValidation(String propmt) {
         int input;
         while (true) {
-            System.out.println(MESSAGE.getInputMessage(prompt+""));
+            System.out.println(MESSAGE.getInputMessage(propmt));
             try {
                 input = INPUT.scanner.nextInt();
                 // Add validation if needed

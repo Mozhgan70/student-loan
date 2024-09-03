@@ -74,14 +74,14 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public boolean login(LoginDto loginDto) {
-        Set<ConstraintViolation<LoginDto>> violations = validator.validate(loginDto);
-
-        if (!violations.isEmpty()) {
-            for (ConstraintViolation<LoginDto> violation : violations) {
-                System.out.println(violation.getMessage());
-            }
-            return false;
-        }
+//        Set<ConstraintViolation<LoginDto>> violations = validator.validate(loginDto);
+//
+//        if (!violations.isEmpty()) {
+//            for (ConstraintViolation<LoginDto> violation : violations) {
+//                System.out.println(violation.getMessage());
+//            }
+//            return false;
+//        }
 
 
 try{

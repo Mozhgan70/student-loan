@@ -29,10 +29,10 @@ public class PaymentMenu {
                     """);
             switch (INPUT.scanner.next()) {
                 case "1":
-
                     break;
                 case "2":
                     break;
+
                 case "3":
                     break ;
                 case "4":
@@ -43,5 +43,6 @@ public class PaymentMenu {
             }
         }
     }
+
 
 }

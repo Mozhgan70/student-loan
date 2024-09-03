@@ -1,13 +1,19 @@
 package dto;
 
 import entity.LoanTypeCondition;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record LoanRegistrationDto(
 
         LoanTypeCondition loanType,
+        @NotNull(message = "spouse data is required.")
+        @Valid
         SpouseDto spouse,
+        @NotNull(message = "Card data is required.")
+        @Valid
         CardDto card,
 
         @NotBlank(message = "address cannot be blank")

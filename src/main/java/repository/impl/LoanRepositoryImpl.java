@@ -68,4 +68,18 @@ public class LoanRepositoryImpl implements LoanRepository {
         return loans.get(0);
 
     }
+
+    @Override
+    public List<Loan> getAllStudentLoan(Student student) {
+        String hql = "SELECT s FROM Loan s WHERE s.student.id = :student";
+        List<Loan> resultList = getEntityManager().createQuery(hql, Loan.class)
+                .setParameter("student", student.getId())
+                .getResultList();
+        if(resultList!=null && resultList.size()>0) {
+            return resultList;
+        }
+        return null;
+
+
+    }
 }

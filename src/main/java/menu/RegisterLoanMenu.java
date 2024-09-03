@@ -9,6 +9,7 @@ import entity.enumration.Bank;
 import entity.enumration.LoanType;
 import menu.util.Input;
 import menu.util.Message;
+import menu.util.Validation;
 import service.*;
 import util.Common;
 import util.UserSession;
@@ -27,6 +28,7 @@ public class RegisterLoanMenu {
     private final CardService CARD_SERVICE;
     private final CardMapper cardMapper;
 
+    Validation validation=new Validation();
 
     public RegisterLoanMenu(Input input, Message message, UserSession userSession, LoanTypeConditionService loanTypeConditionService, StudentService studentService, Common common, LoanService loanService, CardService cardService, CardMapper cardMapper) {
         INPUT = input;
@@ -94,11 +96,14 @@ public class RegisterLoanMenu {
     }
 
    public void registerLoan(LoanTypeCondition loanType) {
+
+       try{
        SpouseDto spouseDTO = null;
        String address = null;
        String contractNumber = null;
 
        if (loanType.getLoanType() == LoanType.HOUSING_LOAN) {
+
            System.out.println("Please insert spouse data for loan registration:");
 
            // Get spouse data
@@ -125,12 +130,18 @@ public class RegisterLoanMenu {
        );
 
        // Register loan and set installments
-       try {
-           LOAN_SERVICE.registerLoan(loanRegistrationDTO);
-           System.out.println("Loan registered successfully.");
-       } catch (IllegalArgumentException e) {
-           System.out.println(e.getMessage());
+
+           if(LOAN_SERVICE.registerLoan(loanRegistrationDTO)){
+               System.out.println("Loan registered successfully.");
+           }
+           else {
+               System.out.println("Loan register failed");
+           }}
+       catch (IllegalArgumentException e) {
+           System.out.println("Validation failed: " + e.getMessage());
        }
+
+
    }
 
 
@@ -161,7 +172,6 @@ public class RegisterLoanMenu {
            }
        }
 
-
        System.out.println(MESSAGE.getInputMessage("Bank Name (Choose from the list)"));
        Bank bank = COMMON.getEnumChoice(Bank.class);
        String cardNumber;
@@ -185,7 +195,8 @@ public class RegisterLoanMenu {
        CardDto cardDTO = new CardDto(expireDate,cardNumber,cvv2,bank);
        return cardDTO;
    }
-   }
+
+}
 
 
 

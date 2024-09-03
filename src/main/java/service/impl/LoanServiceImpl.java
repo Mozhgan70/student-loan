@@ -6,6 +6,10 @@ import entity.*;
 import entity.enumration.LoanType;
 import entity.enumration.MaritalStatus;
 import entity.enumration.UniversityType;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import menu.util.Input;
 import repository.LoanRepository;
 import service.InstallmentService;
@@ -17,10 +21,7 @@ import util.jalaliCalender.JalaliDateUtil;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class LoanServiceImpl implements LoanService {
 
@@ -30,6 +31,7 @@ public class LoanServiceImpl implements LoanService {
     private final InstallmentService INSTALLMENT_SERVICE;
     private final StudentService STUDENT_SERVICE;
     private final LoanMapper loanMapper;
+    private Validator validator;
 
 
     public LoanServiceImpl(LoanRepository loanRepository, UserSession userSession, Input input, InstallmentService installmentService, StudentService studentService, LoanMapper loanMapper) {
@@ -39,6 +41,8 @@ public class LoanServiceImpl implements LoanService {
         INSTALLMENT_SERVICE = installmentService;
         STUDENT_SERVICE = studentService;
         this.loanMapper = loanMapper;
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        this.validator = factory.getValidator();
     }
 
     @Override
@@ -135,8 +139,7 @@ public class LoanServiceImpl implements LoanService {
             if (checkRequestDateIsValid(loanTypeCondition.getLoanType(),student)) {
                 if (loanTypeCondition != null) {
                     System.out.println("""
-                        تسهیلاتی که در قالب تسهیلات دانشجویی در اختیار شما قرار خواهد 
-                        گرفت به مبلغ %s می باشدآیا مایل به دریافت این تسهیلات می باشید؟
+                        تسهیلاتی انتخابی شما به مبلغ %s می باشدآیا مایل به دریافت این تسهیلات می باشید؟
                         1 .تایید
                         2 .انصراف
                         """.formatted(loanTypeCondition.getAmount()));
@@ -220,7 +223,23 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public void registerLoan(LoanRegistrationDto loanRegistrationDTO) {
+    public Boolean registerLoan(LoanRegistrationDto loanRegistrationDTO) {
+
+        Set<ConstraintViolation<LoanRegistrationDto>> violations = validator.validate(loanRegistrationDTO);
+
+
+        if (!violations.isEmpty()) {
+            System.out.println("Registration failed please fix this errors and try again:");
+            for (ConstraintViolation<LoanRegistrationDto> violation : violations) {
+                System.out.println("\u001B[31m" + violation.getMessage() + "\u001B[0m");
+            }
+            throw new IllegalArgumentException("Loan registration failed due to validation errors.");
+
+        }
+
+
+
+
         Student student =STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
 
         if (loanRegistrationDTO.loanType().getLoanType() == LoanType.HOUSING_LOAN) {
@@ -247,6 +266,13 @@ public class LoanServiceImpl implements LoanService {
         Date startDate = calcInstallmentStartDate(student);
         Set<Installment> installments = calculateInstallments(loanRegistrationDTO.loanType().getAmount(), 100, loan, startDate);
         INSTALLMENT_SERVICE.setInstallment(installments);
+        return true;
+
+    }
+
+    @Override
+    public List<Loan> getAllStudentLoan(Student student) {
+        return List.of();
     }
 
 

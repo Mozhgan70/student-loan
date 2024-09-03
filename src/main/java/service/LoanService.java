@@ -8,6 +8,7 @@ import entity.Student;
 import entity.enumration.LoanType;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 public interface LoanService {
@@ -23,9 +24,9 @@ public interface LoanService {
 
     Date calcInstallmentStartDate(Student student);
     Set<Installment> calculateInstallments(double loanAmount, double annualIncreasePercentage, Loan loan, Date startDate);
-    void registerLoan(LoanRegistrationDto loanRegistrationDTO);
-//    void finalRegisterLoan(LoanTypeCondition LoanTypeCondition, String cardNumber, String expireDate, int cvv2, Bank bank);
-//    Student registerHousingLoan(HousingLoanExtraDataDto housingLoanExtraDataDto,Student student);
+    Boolean registerLoan(LoanRegistrationDto loanRegistrationDTO);
+    List<Loan> getAllStudentLoan(Student student);
+
 }
 
 
