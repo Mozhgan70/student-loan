@@ -14,25 +14,21 @@ import repository.LoanTypeConditionRepository;
 import java.util.List;
 
 public class LoanTypeConditionRepositoryImpl implements LoanTypeConditionRepository {
-    private final EntityManagerFactory entityManagerFactory;
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
-    public LoanTypeConditionRepositoryImpl(EntityManagerFactory entityManagerFactory) {
-        this.entityManagerFactory = entityManagerFactory;
 
+    public LoanTypeConditionRepositoryImpl(EntityManager entityManager) {
+
+
+        this.entityManager = entityManager;
     }
 
-    public EntityManager getEntityManager() {
-        if (entityManager == null) {
-            entityManager = entityManagerFactory.createEntityManager();
-        }
-        return entityManager;
-    }
+
 
 
     @Override
     public LoanTypeCondition findByEducationandLoanType(EducationGrade education, LoanType loanType,City city) {
-        TypedQuery<LoanTypeCondition> query = getEntityManager().createQuery("SELECT s FROM LoanTypeCondition s WHERE" +
+        TypedQuery<LoanTypeCondition> query = entityManager.createQuery("SELECT s FROM LoanTypeCondition s WHERE" +
                 "(:education IS NULL OR s.educationGrade = :education)" +
                 "And s.loanType = :loanType " +
                 "And (:city IS NULL OR s.city = :city)" ,LoanTypeCondition.class) ;

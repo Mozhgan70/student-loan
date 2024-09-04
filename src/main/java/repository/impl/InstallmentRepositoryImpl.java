@@ -1,8 +1,6 @@
 package repository.impl;
 
-import entity.Card;
-import entity.Installment;
-import entity.Loan;
+import entity.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import repository.InstallmentRepository;
@@ -11,45 +9,81 @@ import java.util.List;
 import java.util.Set;
 
 public class InstallmentRepositoryImpl implements InstallmentRepository {
-    private final EntityManagerFactory entityManagerFactory;
-    private EntityManager entityManager;
-    public InstallmentRepositoryImpl(EntityManagerFactory entityManagerFactory) {
-        this.entityManagerFactory = entityManagerFactory;
 
+    private final EntityManager entityManager;
+    public InstallmentRepositoryImpl(EntityManager entityManager) {
+
+
+        this.entityManager = entityManager;
     }
-    public EntityManager getEntityManager() {
-        if (entityManager == null) {
-            entityManager = entityManagerFactory.createEntityManager();
-        }
-        return entityManager;
-    }
+
+
+//    @Override
+//    public void setInstallment(Set<Installment> installments,Card card,Loan loan) {
+//        Spouse spouse=installments.stream().findFirst().get().getLoan().getStudent().getSpouse();
+//        Student student=installments.stream().findFirst().get().getLoan().getStudent();
+//        try {
+//            getEntityManager().getTransaction().begin();
+//            if (card.getId() != null) {
+//
+//                Card cardmerge = getEntityManager().merge(card);
+//                loan.setCard(cardmerge);
+//            } else {
+//
+//                getEntityManager().persist(card);
+//                loan.setCard(card);
+//            }
+//            getEntityManager().persist(spouse);
+//            student.setSpouse(spouse);
+//            getEntityManager().persist(student);
+//            getEntityManager().persist(loan);
+//
+//
+//            for (Installment installment : installments) {
+//                installment.setLoan(loan);
+//                getEntityManager().persist(installment);
+//
+//
+//            }
+//            getEntityManager().getTransaction().commit();
+//        }
+//        catch (Exception e) {
+//            if (getEntityManager().getTransaction() != null) {
+//                getEntityManager().getTransaction().rollback();
+//            }
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void setInstallment(Set<Installment> installments) {
         try {
-            getEntityManager().getTransaction().begin();
+            entityManager.getTransaction().begin();
+          //  entityManager.merge(installments.stream().findFirst().get().getLoan().getStudent());
             for (Installment installment : installments) {
-                getEntityManager().persist(installment);
+                entityManager.persist(installment);
 
             }
-            getEntityManager().getTransaction().commit();
+            entityManager.getTransaction().commit();
         }
         catch (Exception e) {
-            if (getEntityManager().getTransaction() != null) {
-                getEntityManager().getTransaction().rollback();
+            if (entityManager.getTransaction() != null) {
+                entityManager.getTransaction().rollback();
             }
             e.printStackTrace();
-        } finally {
-
-            getEntityManager().close();
         }
+//        finally {
+//
+//            getEntityManager().close();
+//        }
+
     }
 
     @Override
     public List<Installment> getInstallmentsByLoanIdAndPaidStatus(Long loanId,Boolean paidStatus) {
         try{
         String hql = "SELECT i FROM Installment i WHERE i.loan.id = :loanId and i.isPaid=:paidStatus order by i.installmentNumber";
-        List<Installment> resultList = getEntityManager().createQuery(hql, Installment.class)
+        List<Installment> resultList = entityManager.createQuery(hql, Installment.class)
                 .setParameter("loanId", loanId)
                 .setParameter("paidStatus", paidStatus)
                 .getResultList();
@@ -68,10 +102,10 @@ public class InstallmentRepositoryImpl implements InstallmentRepository {
     @Override
     public void installmentPayment(Installment installment,Card card) {
         try{
-        entityManager.getTransaction().begin();
-        entityManager.merge(installment);
-        entityManager.merge(card);
-        entityManager.getTransaction().commit();
+            entityManager.getTransaction().begin();
+            entityManager.merge(installment);
+            entityManager.merge(card);
+            entityManager.getTransaction().commit();
     } catch (Exception e) {
         if (entityManager.getTransaction().isActive()) {
             entityManager.getTransaction().rollback();

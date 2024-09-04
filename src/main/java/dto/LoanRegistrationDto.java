@@ -12,9 +12,10 @@ public record LoanRegistrationDto(
 
         @Valid
         SpouseDto spouse,
+
         @NotNull(message = "Card data is required.")
         @Valid
-        CardDto card,
+        CardDtoWithId card,
 
 
         @Size(max = 255, message = "address must be less than 255 characters")

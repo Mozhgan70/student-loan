@@ -1,5 +1,6 @@
 package service.impl;
 
+import dto.CardDtoWithId;
 import dto.LoanRegistrationDto;
 import dto.mapStruct.LoanMapper;
 import entity.*;
@@ -129,12 +130,12 @@ public class LoanServiceImpl implements LoanService {
             System.out.println("این وام متعلق به دانشجویان شهریه پرداز است");
             return 0;
         }
-        else if(loanTypeCondition.getLoanType()==LoanType.HOUSING_LOAN
-                && USER_SESSION.getMaritalStatus()== MaritalStatus.SINGLE && USER_SESSION.getIsDormitoryResident()){
+        if(loanTypeCondition.getLoanType()==LoanType.HOUSING_LOAN){
+           if ( student.getMaritalStatus()== MaritalStatus.SINGLE || student.isDormitoryResident()){
             System.out.println("این وام متعلق به دانشجویان متاهلی است که ساکن خوابگاه نیستند");
-            return 0;
+            return 0;}
         }
-        else{
+
 
             if (checkRequestDateIsValid(loanTypeCondition.getLoanType(),student)) {
                 if (loanTypeCondition != null) {
@@ -153,7 +154,8 @@ public class LoanServiceImpl implements LoanService {
 
                 return 0;
             }
-        }
+
+
     }
 
     @Override
@@ -212,7 +214,7 @@ public class LoanServiceImpl implements LoanService {
                 Installment installment=Installment.builder().installmentAmount(initialInstallment)
                         .installmentDate(calendar.getTime())
                         .installmentNumber(count)
-                        .loan(loan)
+                      .loan(loan)
                         .build();
                 installments.add(installment);
             }
@@ -224,7 +226,7 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public Boolean registerLoan(LoanRegistrationDto loanRegistrationDTO) {
-
+try{
         Set<ConstraintViolation<LoanRegistrationDto>> violations = validator.validate(loanRegistrationDTO);
 
 
@@ -256,6 +258,7 @@ public class LoanServiceImpl implements LoanService {
         student.setAddress(loanRegistrationDTO.address());
         student.setContractNumber(loanRegistrationDTO.contractNumber());
         Loan loan = loanMapper.toLoan(loanRegistrationDTO);
+       // Card card=loanMapper.toCard(loanRegistrationDTO.card());
 
         loan.setPaymentDate(new Date());
         loan.setRegisterLoanDate(new Date());
@@ -266,7 +269,11 @@ public class LoanServiceImpl implements LoanService {
         Date startDate = calcInstallmentStartDate(student);
         Set<Installment> installments = calculateInstallments(loanRegistrationDTO.loanType().getAmount(), 100, loan, startDate);
         INSTALLMENT_SERVICE.setInstallment(installments);
-        return true;
+        return true;}
+          catch (Exception e){
+              System.out.println(e.getMessage());
+                 return false;
+}
 
     }
 

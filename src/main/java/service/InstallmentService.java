@@ -1,7 +1,5 @@
 package service;
 
-import dto.CardDto;
-import dto.CardDtoBalance;
 import entity.Card;
 import entity.Installment;
 import entity.Loan;

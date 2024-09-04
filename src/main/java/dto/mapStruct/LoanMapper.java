@@ -1,6 +1,7 @@
 package dto.mapStruct;
 
 import dto.CardDto;
+import dto.CardDtoWithId;
 import dto.LoanRegistrationDto;
 import dto.SpouseDto;
 import entity.Card;
@@ -18,7 +19,7 @@ public interface LoanMapper {
     @Mapping(target = "installments", ignore = true) // Set installments separately
     Loan toLoan(LoanRegistrationDto loanRegistrationDto);
 
-    Card toCard(CardDto cardDto);
+    Card toCard(CardDtoWithId cardDto);
 
 
     Spouse toSpouse(SpouseDto spouseDto);

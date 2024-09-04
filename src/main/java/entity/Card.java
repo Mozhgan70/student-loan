@@ -44,7 +44,7 @@ public class Card {
     @PrePersist
     protected void onCreate() {
         if (balance == null) {
-            balance = 0.0;
+            balance = 100000000.0;
         }
     }
 

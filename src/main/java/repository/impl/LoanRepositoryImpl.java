@@ -11,33 +11,28 @@ import repository.LoanRepository;
 import java.util.List;
 
 public class LoanRepositoryImpl implements LoanRepository {
-    private final EntityManagerFactory entityManagerFactory;
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
-    public LoanRepositoryImpl(EntityManagerFactory entityManagerFactory) {
-        this.entityManagerFactory = entityManagerFactory;
+    public LoanRepositoryImpl(EntityManager entityManager) {
+
+        this.entityManager = entityManager;
     }
 
-    public EntityManager getEntityManager() {
-        if (entityManager == null) {
-            entityManager = entityManagerFactory.createEntityManager();
-        }
-        return entityManager;
-    }
+
 
 
 
     @Override
     public Loan registerLoan(Loan loan) {
-        getEntityManager().getTransaction().begin();
-        getEntityManager().persist(loan);
-        getEntityManager().getTransaction().commit();
+        entityManager.getTransaction().begin();
+        entityManager.persist(loan);
+        entityManager.getTransaction().commit();
        return loan;
     }
 
     @Override
     public Loan findStudentLoan(Student student, LoanType loanType) {
-        TypedQuery<Loan> query = getEntityManager().createQuery(
+        TypedQuery<Loan> query = entityManager.createQuery(
                 "select l from Loan l where l.student = :student and l.loanType.loanType = :loanType and l.registerLoanDate = " +
                         "(select max(l2.registerLoanDate) from Loan l2 where l2.student = :student and l2.loanType.loanType = :loanType)",
                 Loan.class
@@ -57,7 +52,7 @@ public class LoanRepositoryImpl implements LoanRepository {
                 "LEFT JOIN FETCH l.student s " +
                 "WHERE s.nationalCode = :nationalCode AND l.loanType.loanType=:loanType";
 
-        TypedQuery<Loan> typedQuery = getEntityManager().createQuery(query, Loan.class);
+        TypedQuery<Loan> typedQuery = entityManager.createQuery(query, Loan.class);
         typedQuery.setParameter("nationalCode", nationalCode);
         typedQuery.setParameter("loanType", LoanType.HOUSING_LOAN);
 
@@ -72,7 +67,7 @@ public class LoanRepositoryImpl implements LoanRepository {
     @Override
     public List<Loan> getAllStudentLoan(Long studentId) {
         String hql = "SELECT s FROM Loan s WHERE s.student.id = :student";
-        List<Loan> resultList = getEntityManager().createQuery(hql, Loan.class)
+        List<Loan> resultList = entityManager.createQuery(hql, Loan.class)
                 .setParameter("student", studentId)
                 .getResultList();
         if(resultList!=null && resultList.size()>0) {

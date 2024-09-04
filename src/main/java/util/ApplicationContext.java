@@ -57,15 +57,15 @@ public class ApplicationContext {
         Input input = new Input();
         Message message = new Message();
         Common common=new Common(input,message);
-        StudentRepository studentRepository=new StudentRepositoryImpl(getEntityManagerFactory());
-        LoanTypeConditionRepository loanTypeConditionRepository=new LoanTypeConditionRepositoryImpl(getEntityManagerFactory());
-        LoanRepository loanRepository=new LoanRepositoryImpl(getEntityManagerFactory());
-        InstallmentRepository installmentRepository=new InstallmentRepositoryImpl(getEntityManagerFactory());
-        SpouseRepository spouseRepository=new SpouseRepositoryImpl(getEntityManagerFactory());
-        CardRepository cardRepository=new CardRepositoryImpl(getEntityManagerFactory());
+        StudentRepository studentRepository=new StudentRepositoryImpl(getEntityManager());
+        LoanTypeConditionRepository loanTypeConditionRepository=new LoanTypeConditionRepositoryImpl(getEntityManager());
+        LoanRepository loanRepository=new LoanRepositoryImpl(getEntityManager());
+        InstallmentRepository installmentRepository=new InstallmentRepositoryImpl(getEntityManager());
+        SpouseRepository spouseRepository=new SpouseRepositoryImpl(getEntityManager());
+        CardRepository cardRepository=new CardRepositoryImpl(getEntityManager());
 
         CardService cardService=new CardServiceImpl(cardRepository,cardMapper);
-        InstallmentService installmentService=new InstallmentServiceImpl(installmentRepository,cardMapper,cardService);
+        InstallmentService installmentService=new InstallmentServiceImpl(installmentRepository);
         StudentService studentService=new  StudentServiceImpl(studentRepository,studentMapper, userSession);
         LoanTypeConditionService loanTypeConditionService=new LoanTypeConditionServiceImpl(loanTypeConditionRepository);
         LoanService loanService=new LoanServiceImpl(loanRepository,userSession,input,installmentService,studentService,loanMapper);

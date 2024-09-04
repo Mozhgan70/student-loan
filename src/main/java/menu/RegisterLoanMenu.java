@@ -1,6 +1,7 @@
 package menu;
 
 import dto.CardDto;
+import dto.CardDtoWithId;
 import dto.LoanRegistrationDto;
 import dto.SpouseDto;
 import dto.mapStruct.CardMapper;
@@ -9,11 +10,9 @@ import entity.enumration.Bank;
 import entity.enumration.LoanType;
 import menu.util.Input;
 import menu.util.Message;
-import menu.util.Validation;
 import service.*;
 import util.Common;
 import util.UserSession;
-
 import java.util.Date;
 import java.util.List;
 
@@ -28,7 +27,7 @@ public class RegisterLoanMenu {
     private final CardService CARD_SERVICE;
     private final CardMapper cardMapper;
 
-    Validation validation=new Validation();
+
 
     public RegisterLoanMenu(Input input, Message message, UserSession userSession, LoanTypeConditionService loanTypeConditionService, StudentService studentService, Common common, LoanService loanService, CardService cardService, CardMapper cardMapper) {
         INPUT = input;
@@ -90,6 +89,7 @@ public class RegisterLoanMenu {
         }
     }
         else{
+
             System.out.println("شما فارغ تحصیل شده اید و امکان ثبت نام در وام های دانشجویی را ندارید");
         }
 
@@ -123,7 +123,8 @@ public class RegisterLoanMenu {
        }
 
        // Get card data
-       CardDto cardDTO=getCard();
+
+       CardDtoWithId cardDTO=getCard();
 
        LoanRegistrationDto loanRegistrationDTO = new LoanRegistrationDto(
                loanType, spouseDTO, cardDTO, address, contractNumber
@@ -144,35 +145,33 @@ public class RegisterLoanMenu {
 
    }
 
+   public CardDtoWithId getCard(){
+//       List<Card> cards = CARD_SERVICE.selectAllStudentCard(USER_SESSION.getTokenId());
+//
+//
+//       if(cards!=null && cards.size()!=0) {
+//           System.out.println("شماره کارت هایی که در ارتباط با تسهیلات دیگر " +
+//                   "در سیستم ثبت شده است آیا مایل به انتخاب از میان آن ها می باشید؟");
+//           System.out.println("1.Yes");
+//           System.out.println("2.No");
+//           int choice = INPUT.scanner.nextInt();
+//           if (choice == 1) {
+//               System.out.println("Select a Bank Card number:");
+//               for (Card card : cards) {
+//                   System.out.println(card.getId() + "----> " + card.getCardNumber());
+//
+//               }
+//               int selectedCard = INPUT.scanner.nextInt();
+//               for (Card card : cards) {
+//                   if (card.getId() == selectedCard) {
+//                       CardDtoWithId cardDto = cardMapper.toDTOId(card);
+//                       return cardDto;
+//                   }
+//               }
+//           }
+//       }
 
-
-   public CardDto getCard(){
-       List<Card> cards = CARD_SERVICE.selectAllStudentCard(USER_SESSION.getTokenId());
-
-
-       if(cards!=null && cards.size()!=0) {
-           System.out.println("شماره کارت هایی که در ارتباط با تسهیلات دیگر " +
-                   "در سیستم ثبت شده است آیا مایل به انتخاب از میان آن ها می باشید؟");
-           System.out.println("1.Yes");
-           System.out.println("2.No");
-           int choice = INPUT.scanner.nextInt();
-           if (choice == 1) {
-               System.out.println("Select a Bank Card number:");
-               for (Card card : cards) {
-                   System.out.println(card.getId() + "----> " + card.getCardNumber());
-
-               }
-               int selectedCard = INPUT.scanner.nextInt();
-               for (Card card : cards) {
-                   if (card.getId() == selectedCard) {
-                       CardDto cardDto = cardMapper.toDTO(card);
-                       return cardDto;
-                   }
-               }
-           }
-       }
-
-       System.out.println(MESSAGE.getInputMessage("کارت باید متعلق به یکی از بانک های زیر باشد لطفا بانک مورد نظر خود را انتخاب کنید"));
+       System.out.println("کارت باید متعلق به یکی از بانک های زیر باشد لطفا بانک مورد نظر خود را انتخاب کنید");
        Bank bank = COMMON.getEnumChoice(Bank.class);
        String cardNumber;
 
@@ -192,7 +191,7 @@ public class RegisterLoanMenu {
        int cvv2 = INPUT.scanner.nextInt();
 
 
-       CardDto cardDTO = new CardDto(expireDate,cardNumber,cvv2,bank);
+       CardDtoWithId cardDTO = new CardDtoWithId(null,expireDate,cardNumber,cvv2,bank);
        return cardDTO;
    }
 

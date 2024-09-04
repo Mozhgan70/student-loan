@@ -1,8 +1,11 @@
 package dto;
 
+import entity.enumration.Bank;
 import jakarta.validation.constraints.*;
 
-public record CardDtoBalance(
+public record CardDtoWithId(
+
+        Long id,
 
         @Pattern(regexp = "^\\d{2}\\/(0[1-9]|1[0-2])$", message = "expire date must be this format YY/MM and MM must be <13")
         @NotBlank(message = "expire date cannot be blank")
@@ -17,7 +20,5 @@ public record CardDtoBalance(
         @Max(value = 9999, message = "CVV2 cannot be more than 4 digits")
         Integer cvv2,
 
-        @Pattern(regexp = "\\d+", message = "Must contain only digits")
-        Double balance
-)
-{}
+         Bank bank
+) {}

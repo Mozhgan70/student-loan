@@ -8,41 +8,36 @@ import repository.StudentRepository;
 import java.util.List;
 
 public class StudentRepositoryImpl implements StudentRepository {
+    private final EntityManager entityManager;
 
-    private final EntityManagerFactory entityManagerFactory;
-    private EntityManager entityManager;
 
-    public StudentRepositoryImpl(EntityManagerFactory entityManagerFactory) {
-        this.entityManagerFactory = entityManagerFactory;
 
+
+    public StudentRepositoryImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
-    public EntityManager getEntityManager() {
-        if (entityManager == null) {
-            entityManager = entityManagerFactory.createEntityManager();
-        }
-        return entityManager;
-    }
+
     @Override
     public Student registerStudent(Student student) {
-        getEntityManager().getTransaction().begin();
-        Student mergedStudent = getEntityManager().merge(student);
-        getEntityManager().getTransaction().commit();
+        entityManager.getTransaction().begin();
+        Student mergedStudent = entityManager.merge(student);
+        entityManager.getTransaction().commit();
         return mergedStudent;
     }
 
     @Override
     public Student findStudentById(long id) {
-        getEntityManager().getTransaction().begin();
-        Student student = getEntityManager().find(Student.class, id);
-        getEntityManager().getTransaction().commit();
+        entityManager.getTransaction().begin();
+        Student student = entityManager.find(Student.class, id);
+        entityManager.getTransaction().commit();
         return student;
     }
 
     @Override
     public boolean existsByNationalCode(String nationalCode) {
         String hql = "SELECT count(s.id) > 0 FROM Student s WHERE s.nationalCode = :nationalCode";
-        return getEntityManager().createQuery(hql, Boolean.class)
+        return entityManager.createQuery(hql, Boolean.class)
                 .setParameter("nationalCode", nationalCode)
                 .getSingleResult();
     }
@@ -55,7 +50,7 @@ public class StudentRepositoryImpl implements StudentRepository {
     @Override
     public Student findByUsernameAndPassword(String username, String password) {
         String hql = "SELECT s FROM Student s WHERE s.userName = :username and s.password = :password";
-        List<Student> resultList = getEntityManager().createQuery(hql, Student.class)
+        List<Student> resultList = entityManager.createQuery(hql, Student.class)
                 .setParameter("username", username)
                 .setParameter("password", password)
                 .getResultList();

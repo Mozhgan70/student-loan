@@ -1,8 +1,8 @@
 package repository;
 
-import dto.CardDto;
 import entity.Card;
 import entity.Installment;
+import entity.Loan;
 
 import java.util.List;
 import java.util.Set;

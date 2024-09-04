@@ -1,11 +1,10 @@
 package service.impl;
 
-import dto.CardDto;
-import dto.CardDtoBalance;
+
 import dto.mapStruct.CardMapper;
-import dto.mapStruct.LoanMapper;
 import entity.Card;
 import entity.Installment;
+import entity.Loan;
 import repository.InstallmentRepository;
 import service.CardService;
 import service.InstallmentService;
@@ -16,13 +15,11 @@ import java.util.Set;
 
 public class InstallmentServiceImpl implements InstallmentService {
     private final InstallmentRepository installmentRepository;
-    private final CardMapper cardMapper;
-    private final CardService CARD_SERVICE;
 
-    public InstallmentServiceImpl(InstallmentRepository installmentRepository, CardMapper cardMapper, CardService cardService) {
+
+    public InstallmentServiceImpl(InstallmentRepository installmentRepository) {
         this.installmentRepository = installmentRepository;
-        this.cardMapper = cardMapper;
-        CARD_SERVICE = cardService;
+
     }
 
     @Override

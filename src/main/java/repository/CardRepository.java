@@ -1,6 +1,7 @@
 package repository;
 
 import entity.Card;
+import entity.Installment;
 import entity.Student;
 
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
 public interface CardRepository {
 
     List<Card> selectAllStudentCard(Long stdId);
-    Card findCard(Card card);
+    Card findCardRelatedLoan(Installment installment);
     void saveOrUpdateCard(Card card);
 
 }
