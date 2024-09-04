@@ -1,5 +1,6 @@
 package repository.impl;
 
+import entity.Card;
 import entity.Installment;
 import entity.Loan;
 import jakarta.persistence.EntityManager;
@@ -46,6 +47,7 @@ public class InstallmentRepositoryImpl implements InstallmentRepository {
 
     @Override
     public List<Installment> getInstallmentsByLoanIdAndPaidStatus(Long loanId,Boolean paidStatus) {
+        try{
         String hql = "SELECT i FROM Installment i WHERE i.loan.id = :loanId and i.isPaid=:paidStatus order by i.installmentNumber";
         List<Installment> resultList = getEntityManager().createQuery(hql, Installment.class)
                 .setParameter("loanId", loanId)
@@ -54,16 +56,27 @@ public class InstallmentRepositoryImpl implements InstallmentRepository {
         if(resultList!=null && resultList.size()>0) {
             return resultList;
         }
-        return null;
+        return null;}
+        catch (Exception e) {
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+            return null;
+    }
     }
 
     @Override
-    public void installmentPayment(Installment installment) {
+    public void installmentPayment(Installment installment,Card card) {
+        try{
         entityManager.getTransaction().begin();
         entityManager.merge(installment);
+        entityManager.merge(card);
         entityManager.getTransaction().commit();
+    } catch (Exception e) {
+        if (entityManager.getTransaction().isActive()) {
+            entityManager.getTransaction().rollback();
+        }
 
     }
-
-
+}
 }

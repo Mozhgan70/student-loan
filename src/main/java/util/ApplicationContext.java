@@ -64,7 +64,7 @@ public class ApplicationContext {
         SpouseRepository spouseRepository=new SpouseRepositoryImpl(getEntityManagerFactory());
         CardRepository cardRepository=new CardRepositoryImpl(getEntityManagerFactory());
 
-        CardService cardService=new CardServiceImpl(cardRepository);
+        CardService cardService=new CardServiceImpl(cardRepository,cardMapper);
         InstallmentService installmentService=new InstallmentServiceImpl(installmentRepository,cardMapper,cardService);
         StudentService studentService=new  StudentServiceImpl(studentRepository,studentMapper, userSession);
         LoanTypeConditionService loanTypeConditionService=new LoanTypeConditionServiceImpl(loanTypeConditionRepository);
@@ -77,7 +77,7 @@ public class ApplicationContext {
         SignupMenu signupMenu=new SignupMenu(input,message,studentService,common);
         RegisterLoanMenu registerLoanMenu=new RegisterLoanMenu(input,message,userSession,loanTypeConditionService
                 ,studentService,common,loanService,cardService,cardMapper);
-        PaymentMenu paymentMenu=new PaymentMenu(input,message,loanService,userSession,installmentService);
+        PaymentMenu paymentMenu=new PaymentMenu(input,message,loanService,userSession,installmentService,cardService);
         LoginSubmenu loginSubmenu=new LoginSubmenu(input,message,registerLoanMenu,paymentMenu);
         LoginMenu loginMenu=new LoginMenu(input,message,loginSubmenu, userSession,studentService);
         menu = new Menu(input,message,signupMenu,loginMenu);

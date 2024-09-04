@@ -1,6 +1,7 @@
 package service.impl;
 
 import dto.CardDto;
+import dto.CardDtoBalance;
 import dto.mapStruct.CardMapper;
 import dto.mapStruct.LoanMapper;
 import entity.Card;
@@ -35,22 +36,13 @@ public class InstallmentServiceImpl implements InstallmentService {
     }
 
     @Override
-    public void installmentPayment(CardDto cardDto,Installment installment) {
-        Card card= cardMapper.toEntity(cardDto);
-        Card findCard = CARD_SERVICE.findCard(card);
-        if(findCard!=null)
-        {
+    public void installmentPayment(Card card, Installment installment,Double amount) {
+           card.setBalance(card.getBalance()-amount);
             installment.setPaymentDate(new Date());
             installment.setIsPaid(true);
             installment.setPaymentAmount(installment.getInstallmentAmount());
             installment.setUnPaymentAmount(0.0);
-            installmentRepository.installmentPayment(installment);
-
-        }
-        else{
-            System.out.println("card data is invalid");
-        }
-
+            installmentRepository.installmentPayment(installment,card);
 
     }
 }

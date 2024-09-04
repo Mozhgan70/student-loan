@@ -9,5 +9,6 @@ public interface CardRepository {
 
     List<Card> selectAllStudentCard(Long stdId);
     Card findCard(Card card);
+    void saveOrUpdateCard(Card card);
 
 }

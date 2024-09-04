@@ -39,13 +39,30 @@ public class CardRepositoryImpl implements CardRepository {
 
     @Override
     public Card findCard(Card card) {
-        TypedQuery<Card> query = entityManager.createQuery("select c from Card c where c.cardNumber=:cardNumber" +
+        TypedQuery<Card> query = getEntityManager().createQuery("select c from Card c where c.cardNumber=:cardNumber" +
                 " and c.cvv2=:cvv2 and c.expireDate=:expireDate", Card.class);
         query.setParameter("cardNumber",card.getCardNumber());
         query.setParameter("cvv2",card.getCvv2());
         query.setParameter("expireDate",card.getExpireDate());
         List<Card> resultList = query.getResultList();
-        if (resultList!=null) return resultList.get(0);
+        if (resultList!=null && !resultList.isEmpty()) return resultList.get(0);
         return null;
     }
+
+
+    public void saveOrUpdateCard(Card card) {
+
+
+        try {
+            entityManager.getTransaction().begin();
+            entityManager.merge(card);
+            entityManager.getTransaction().commit();
+        } catch (Exception e) {
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+            throw e;
+        }
+    }
+
 }
