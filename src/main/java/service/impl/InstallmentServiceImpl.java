@@ -28,18 +28,26 @@ public class InstallmentServiceImpl implements InstallmentService {
     }
 
     @Override
-    public List<Installment> getInstallmentsByLoanIdAndPaidStatus(Long loanId,Boolean paidStatus) {
-        return installmentRepository.getInstallmentsByLoanIdAndPaidStatus(loanId,paidStatus);
+    public List<Installment> getInstallmentsByLoanIdAndPaidStatus(Long loanId, Boolean paidStatus) {
+        return installmentRepository.getInstallmentsByLoanIdAndPaidStatus(loanId, paidStatus);
     }
 
     @Override
-    public void installmentPayment(Card card, Installment installment,Double amount) {
-           card.setBalance(card.getBalance()-amount);
+    public void installmentPayment(Card card, Installment installment, Double amount) {
+
+        try {
+            card.setBalance(card.getBalance() - amount);
             installment.setPaymentDate(new Date());
             installment.setIsPaid(true);
             installment.setPaymentAmount(installment.getInstallmentAmount());
             installment.setUnPaymentAmount(0.0);
-            installmentRepository.installmentPayment(installment,card);
+            installmentRepository.installmentPayment(installment, card);
 
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+
+        }
     }
+
+
 }

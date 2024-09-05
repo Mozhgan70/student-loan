@@ -50,6 +50,7 @@ public class LoginMenu {
     }
 
     private void getLogin() {
+        try{
         System.out.println(MESSAGE.getInputMessage("userName"));
         String username = INPUT.scanner.next();
         System.out.println(MESSAGE.getInputMessage("password"));
@@ -61,6 +62,9 @@ public class LoginMenu {
         } else {
             System.out.println("user not found");
         }
+        }catch (Exception e){
+            System.out.println(e.getMessage());
 
+        }
     }
 }

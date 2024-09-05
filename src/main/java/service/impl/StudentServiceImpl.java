@@ -36,40 +36,41 @@ public class StudentServiceImpl implements StudentService {
 
         if (!violations.isEmpty()) {
             for (ConstraintViolation<RegisterStudentDto> violation : violations) {
-                System.out.println("Validation Error: " + violation.getMessage());
+                System.out.println("\u001B[31m" + violation.getMessage() + "\u001B[0m");
             }
             return null;
         }
 
 
-     try{
-        Student student = studentMapper.toEntity(param);
-        if (!studentRepository.existsByNationalCode(param.nationalCode())) {
-            return studentRepository.registerStudent(student);
+        try {
+            Student student = studentMapper.toEntity(param);
+            if (!studentRepository.existsByNationalCode(param.nationalCode())) {
+                return studentRepository.registerStudent(student);
 
-        }
-        else {
-            System.out.println("Student with the same national code already exists.");
+            } else {
+                System.out.println("Student with the same national code already exists.");
+                return null;
+            }
+
+        } catch (Exception e) {
+            System.out.println("An error occurred while registering the student: " + e.getMessage());
             return null;
         }
-
-    }
-    catch(Exception e){
-        System.out.println("An error occurred while registering the student: " + e.getMessage());
-        return null;
-    }
     }
 
     @Override
     public Student findByUsernameAndPassword(String username, String password) {
-
-        Student byUsernameAndPassword = studentRepository.findByUsernameAndPassword(username, password);
-        if (byUsernameAndPassword != null) {
-            return byUsernameAndPassword;
+        try {
+            Student byUsernameAndPassword = studentRepository.findByUsernameAndPassword(username, password);
+            if (byUsernameAndPassword != null) {
+                return byUsernameAndPassword;
+            }
+            return null;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
         }
-        return null;
     }
-
 
 
     @Override
@@ -84,31 +85,36 @@ public class StudentServiceImpl implements StudentService {
 //        }
 
 
-try{
-        Student student = studentRepository.findByUsernameAndPassword(loginDto.userName(), loginDto.password());
+        try {
+            Student student = studentRepository.findByUsernameAndPassword(loginDto.userName(), loginDto.password());
 
-        if (student != null) {
-            userSession.setTokenId(student.getId());
-            userSession.setTokenName(student.getUserName());
-            userSession.setEducationGrade(student.getEducationGrade());
-            userSession.setEntryYear(student.getEntryYear());
-            userSession.setIsDormitoryResident(student.isDormitoryResident());
-            userSession.setMaritalStatus(student.getMaritalStatus());
-            userSession.setUniversityType(student.getUniversityType());
-            userSession.setCity(student.getResidenceCity());
-            return true;
+            if (student != null) {
+                userSession.setTokenId(student.getId());
+                userSession.setTokenName(student.getUserName());
+                userSession.setEducationGrade(student.getEducationGrade());
+                userSession.setEntryYear(student.getEntryYear());
+                userSession.setIsDormitoryResident(student.isDormitoryResident());
+                userSession.setMaritalStatus(student.getMaritalStatus());
+                userSession.setUniversityType(student.getUniversityType());
+                userSession.setCity(student.getResidenceCity());
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            System.out.println("An error occurred while registering the student: " + e.getMessage());
+            return false;
         }
-        return false;}
-    catch (Exception e){
-    System.out.println("An error occurred while registering the student: " + e.getMessage());
-    return false;
-    }
 
     }
 
     @Override
     public Student findStudentById(long id) {
         return studentRepository.findStudentById(id);
+    }
+
+    @Override
+    public Student findStudentByNatCode(String natCode) {
+        return studentRepository.findStudentByNatCode(natCode);
     }
 }
 //    @Override

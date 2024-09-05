@@ -10,5 +10,6 @@ public interface StudentService {
     Student findByUsernameAndPassword(String username, String password);
     boolean login (LoginDto loginDto);
     Student findStudentById(long id);
+    Student findStudentByNatCode(String natCode);
 
 }

@@ -16,18 +16,18 @@ public record RegisterStudentDto(
         @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Name can only contain letters")
         String name,
 
-        @NotBlank(message = "Name cannot be blank")
-        @Size(max = 50, message = "Name must be less than 50 characters")
-        @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Name can only contain letters")
+        @NotBlank(message = "Last Name cannot be blank")
+        @Size(max = 50, message = "Last Name must be less than 50 characters")
+        @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Last Name can only contain letters")
         String lastName,
 
-        @NotBlank(message = "Name cannot be blank")
-        @Size(max = 50, message = "Name must be less than 50 characters")
-        @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Name can only contain letters")
+        @NotBlank(message = "father Name cannot be blank")
+        @Size(max = 50, message = "father Name must be less than 50 characters")
+        @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "father Name can only contain letters")
         String fatherName,
 
-        @Size(max = 50, message = "Name must be less than 50 characters")
-        @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Name can only contain letters")
+        @Size(max = 50, message = "mother Name must be less than 50 characters")
+        @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "mother Name can only contain letters")
         String motherName,
 
         @NotBlank(message = "ID number cannot be blank")

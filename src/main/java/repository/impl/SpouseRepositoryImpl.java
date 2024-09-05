@@ -12,8 +12,6 @@ public class SpouseRepositoryImpl implements SpouseRepository {
 
 
     public SpouseRepositoryImpl(EntityManager entityManager) {
-
-
         this.entityManager = entityManager;
     }
 
@@ -21,9 +19,16 @@ public class SpouseRepositoryImpl implements SpouseRepository {
 
     @Override
     public Spouse save(Spouse spouse) {
+        try{
         entityManager.getTransaction().begin();
         entityManager.persist(spouse);
         entityManager.getTransaction().commit();
         return spouse;
+    }
+        catch(Exception e){
+        entityManager.getTransaction().rollback();
+        e.printStackTrace();
+        return null;
+    }
     }
 }

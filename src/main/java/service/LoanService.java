@@ -26,7 +26,8 @@ public interface LoanService {
     Set<Installment> calculateInstallments(double loanAmount, double annualIncreasePercentage, Loan loan, Date startDate);
     Boolean registerLoan(LoanRegistrationDto loanRegistrationDTO);
     List<Loan> getAllStudentLoan(Long studentId);
-
+    Boolean checkSpouseLoan(String natCode);
+    Boolean checkIsOpenRegisterDate();
 }
 
 

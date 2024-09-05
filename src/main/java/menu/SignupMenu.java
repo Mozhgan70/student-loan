@@ -81,8 +81,16 @@ public class SignupMenu {
 
 
     public void registerStudent() {
+        try{
         Student student=null;
         do{
+        System.out.println(MESSAGE.getInputMessage("National Code"));
+        String nationalCode= INPUT.scanner.next();
+        Student studentByNatCode = STUDENT_SERVICE.findStudentByNatCode(nationalCode);
+        if(studentByNatCode!=null){
+            System.out.println("this student registered before");
+            return;
+        }
         System.out.println(MESSAGE.getInputMessage("First Name"));
         String name = INPUT.scanner.next();
         System.out.println(MESSAGE.getInputMessage("Last Name"));
@@ -93,8 +101,6 @@ public class SignupMenu {
         String motherName = INPUT.scanner.next();
         System.out.println(MESSAGE.getInputMessage("Id Number"));
         String idNumber= INPUT.scanner.next();
-        System.out.println(MESSAGE.getInputMessage("National Code"));
-        String nationalCode= INPUT.scanner.next();
         System.out.println(MESSAGE.getInputMessage("BirthDate In This Format YYYY/MM/DD For Example 1403/05/28"));
         String persianBirthDate= INPUT.scanner.next();
         Date birthDate = convertPersianDateToDate(persianBirthDate);
@@ -144,5 +150,9 @@ public class SignupMenu {
             System.out.println("Please correct the errors and try again.");
         }
     } while (student == null);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+
+        }
 }
 }

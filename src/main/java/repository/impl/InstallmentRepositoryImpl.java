@@ -55,29 +55,75 @@ public class InstallmentRepositoryImpl implements InstallmentRepository {
 //        }
 //    }
 
-    @Override
-    public void setInstallment(Set<Installment> installments) {
-        try {
-            entityManager.getTransaction().begin();
-          //  entityManager.merge(installments.stream().findFirst().get().getLoan().getStudent());
-            for (Installment installment : installments) {
-                entityManager.persist(installment);
-
-            }
-            entityManager.getTransaction().commit();
-        }
-        catch (Exception e) {
-            if (entityManager.getTransaction() != null) {
-                entityManager.getTransaction().rollback();
-            }
-            e.printStackTrace();
-        }
-//        finally {
+//    @Override
+//    public void setInstallment(Set<Installment> installments) {
+//        try {
+//            entityManager.getTransaction().begin();
+//          //  entityManager.merge(installments.stream().findFirst().get().getLoan().getStudent());
+//            for (Installment installment : installments) {
+//                entityManager.persist(installment);
 //
-//            getEntityManager().close();
+//            }
+//            entityManager.getTransaction().commit();
 //        }
+//        catch (Exception e) {
+//            if (entityManager.getTransaction() != null) {
+//                entityManager.getTransaction().rollback();
+//            }
+//            e.printStackTrace();
+//        }
+//
+//
+//    }
+@Override
+public void setInstallment(Set<Installment> installments) {
+    try {
+        entityManager.getTransaction().begin();
 
+        for (Installment installment : installments) {
+            Loan loan = installment.getLoan();
+
+            Card card = loan.getCard();
+            if (card != null && card.getId() != null) {
+
+                loan.setCard(entityManager.merge(card));
+            } else if (card != null) {
+                entityManager.persist(card);
+            }
+
+            if (loan.getId() != null) {
+                loan = entityManager.merge(loan);
+            } else {
+                entityManager.persist(loan);
+            }
+
+
+            Student student = loan.getStudent();
+            if (student.getId() != null) {
+                student = entityManager.merge(student);
+            } else {
+                entityManager.persist(student);
+            }
+
+            if (student.getSpouse() != null && student.getSpouse().getId() != null) {
+                student.setSpouse(entityManager.merge(student.getSpouse()));
+            }
+
+
+
+
+            entityManager.merge(installment);
+        }
+
+        entityManager.getTransaction().commit();
+    } catch (Exception e) {
+        if (entityManager.getTransaction() != null) {
+            entityManager.getTransaction().rollback();
+        }
+        e.printStackTrace();
     }
+}
+
 
     @Override
     public List<Installment> getInstallmentsByLoanIdAndPaidStatus(Long loanId,Boolean paidStatus) {
@@ -90,10 +136,12 @@ public class InstallmentRepositoryImpl implements InstallmentRepository {
         if(resultList!=null && resultList.size()>0) {
             return resultList;
         }
-        return null;}
+            return null;
+        }
         catch (Exception e) {
             if (entityManager.getTransaction().isActive()) {
-                entityManager.getTransaction().rollback();
+                e.printStackTrace();
+
             }
             return null;
     }

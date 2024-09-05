@@ -45,54 +45,57 @@ public class RegisterLoanMenu {
         Student student = STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
         Date startDate = LOAN_SERVICE.calcInstallmentStartDate(student);
         Date currentDateTime = new Date();
-        if (currentDateTime.before(startDate)) {
-        RegisterLoanMenu:
-        while (true) {
-            System.out.println("""
-                    Enter one of the following options:
-                    1 ->Tuition loan
-                    2 ->Education loan
-                    3 ->Housing Loan
-                    4 ->Previous
-                    """);
+        if(LOAN_SERVICE.checkIsOpenRegisterDate()) {
+            if (currentDateTime.before(startDate)) {
+                RegisterLoanMenu:
+                while (true) {
+                    System.out.println("""
+                            Enter one of the following options:
+                            1 ->Tuition loan
+                            2 ->Education loan
+                            3 ->Housing Loan
+                            4 ->Previous
+                            """);
 
-            switch (INPUT.scanner.next()) {
+                    switch (INPUT.scanner.next()) {
 
-                case "1":
+                        case "1":
 
-                    LoanTypeCondition tuitionFeeLoan = LOAN_TYPE_CONDITION_SERVICE
-                            .findByEducationandLoanType(USER_SESSION.getEducationGrade(), LoanType.TUITION_FEE_LOAN, null);
-                    if (LOAN_SERVICE.getCheckLoanCondition(tuitionFeeLoan) == 1)
-                        registerLoan(tuitionFeeLoan);
-                    break;
-                case "2":
+                            LoanTypeCondition tuitionFeeLoan = LOAN_TYPE_CONDITION_SERVICE
+                                    .findByEducationandLoanType(USER_SESSION.getEducationGrade(), LoanType.TUITION_FEE_LOAN, null);
+                            if (LOAN_SERVICE.getCheckLoanCondition(tuitionFeeLoan) == 1)
+                                registerLoan(tuitionFeeLoan);
+                            break;
+                        case "2":
 
-                    LoanTypeCondition educationLoan =
-                            LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(USER_SESSION.getEducationGrade(),
-                                    LoanType.EDUCATION_LOAN, null);
-                    if (LOAN_SERVICE.getCheckLoanCondition(educationLoan) == 1)
-                        registerLoan(educationLoan);
-                    break;
-                case "3":
-                    LoanTypeCondition housingLoan =
-                            LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(null, LoanType.HOUSING_LOAN,USER_SESSION.getCity());
-                    if (LOAN_SERVICE.getCheckLoanCondition(housingLoan) == 1)
-                        registerLoan(housingLoan);
-                    break;
-                case "4":
-                    break RegisterLoanMenu;
+                            LoanTypeCondition educationLoan =
+                                    LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(USER_SESSION.getEducationGrade(),
+                                            LoanType.EDUCATION_LOAN, null);
+                            if (LOAN_SERVICE.getCheckLoanCondition(educationLoan) == 1)
+                                registerLoan(educationLoan);
+                            break;
+                        case "3":
+                            LoanTypeCondition housingLoan =
+                                    LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(null, LoanType.HOUSING_LOAN, USER_SESSION.getCity());
+                            if (LOAN_SERVICE.getCheckLoanCondition(housingLoan) == 1)
+                                registerLoan(housingLoan);
+                            break;
+                        case "4":
+                            break RegisterLoanMenu;
 
-                default:
-                    System.out.println(MESSAGE.getInvalidInputMessage());
+                        default:
+                            System.out.println(MESSAGE.getInvalidInputMessage());
+                    }
+
+                }
+            } else {
+
+                System.out.println("شما فارغ تحصیل شده اید و امکان ثبت نام در وام های دانشجویی را ندارید");
             }
-
         }
-    }
         else{
-
-            System.out.println("شما فارغ تحصیل شده اید و امکان ثبت نام در وام های دانشجویی را ندارید");
+            System.out.println("در حال حاضر پنجره ثبت‌ نام وام بسته است.");
         }
-
     }
 
    public void registerLoan(LoanTypeCondition loanType) {
@@ -109,6 +112,10 @@ public class RegisterLoanMenu {
            // Get spouse data
            System.out.println(MESSAGE.getInputMessage("Spouse National Code"));
            String nationalCode = INPUT.scanner.next();
+           if(!LOAN_SERVICE.checkSpouseLoan(nationalCode)){
+               return;
+           }
+
            System.out.println(MESSAGE.getInputMessage("Spouse First Name"));
            String name = INPUT.scanner.next();
            System.out.println(MESSAGE.getInputMessage("Spouse Last Name"));
@@ -146,30 +153,29 @@ public class RegisterLoanMenu {
    }
 
    public CardDtoWithId getCard(){
-//       List<Card> cards = CARD_SERVICE.selectAllStudentCard(USER_SESSION.getTokenId());
-//
-//
-//       if(cards!=null && cards.size()!=0) {
-//           System.out.println("شماره کارت هایی که در ارتباط با تسهیلات دیگر " +
-//                   "در سیستم ثبت شده است آیا مایل به انتخاب از میان آن ها می باشید؟");
-//           System.out.println("1.Yes");
-//           System.out.println("2.No");
-//           int choice = INPUT.scanner.nextInt();
-//           if (choice == 1) {
-//               System.out.println("Select a Bank Card number:");
-//               for (Card card : cards) {
-//                   System.out.println(card.getId() + "----> " + card.getCardNumber());
-//
-//               }
-//               int selectedCard = INPUT.scanner.nextInt();
-//               for (Card card : cards) {
-//                   if (card.getId() == selectedCard) {
-//                       CardDtoWithId cardDto = cardMapper.toDTOId(card);
-//                       return cardDto;
-//                   }
-//               }
-//           }
-//       }
+
+       List<Card> cards = CARD_SERVICE.selectAllStudentCard(USER_SESSION.getTokenId());
+       if(cards!=null && cards.size()!=0) {
+           System.out.println("شماره کارت هایی که در ارتباط با تسهیلات دیگر " +
+                   "در سیستم ثبت شده است آیا مایل به انتخاب از میان آن ها می باشید؟");
+           System.out.println("1.Yes");
+           System.out.println("2.No");
+           int choice = INPUT.scanner.nextInt();
+           if (choice == 1) {
+               System.out.println("Select a Bank Card number:");
+               for (Card card : cards) {
+                   System.out.println(card.getId() + "----> " + card.getCardNumber());
+
+               }
+               int selectedCard = INPUT.scanner.nextInt();
+               for (Card card : cards) {
+                   if (card.getId() == selectedCard) {
+                       CardDtoWithId cardDto = cardMapper.toDTOId(card);
+                       return cardDto;
+                   }
+               }
+           }
+       }
 
        System.out.println("کارت باید متعلق به یکی از بانک های زیر باشد لطفا بانک مورد نظر خود را انتخاب کنید");
        Bank bank = COMMON.getEnumChoice(Bank.class);
@@ -187,9 +193,19 @@ public class RegisterLoanMenu {
        }
        System.out.println(MESSAGE.getInputMessage("Expire Date (format: YY/MM)"));
        String expireDate = INPUT.scanner.next();
-       System.out.println(MESSAGE.getInputMessage("CVV2"));
-       int cvv2 = INPUT.scanner.nextInt();
+       int cvv2 = 0;
+       boolean validInput = false;
 
+       while (!validInput) {
+           System.out.println(MESSAGE.getInputMessage("CVV2"));
+           if (INPUT.scanner.hasNextInt()) {
+               cvv2 = INPUT.scanner.nextInt();
+               validInput = true;
+           } else {
+               System.out.println("Invalid input! Please enter a numeric value for CVV2.");
+               INPUT.scanner.next();
+           }
+       }
 
        CardDtoWithId cardDTO = new CardDtoWithId(null,expireDate,cardNumber,cvv2,bank);
        return cardDTO;

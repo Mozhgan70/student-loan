@@ -18,8 +18,6 @@ public class LoanTypeConditionRepositoryImpl implements LoanTypeConditionReposit
 
 
     public LoanTypeConditionRepositoryImpl(EntityManager entityManager) {
-
-
         this.entityManager = entityManager;
     }
 
@@ -28,6 +26,7 @@ public class LoanTypeConditionRepositoryImpl implements LoanTypeConditionReposit
 
     @Override
     public LoanTypeCondition findByEducationandLoanType(EducationGrade education, LoanType loanType,City city) {
+        try{
         TypedQuery<LoanTypeCondition> query = entityManager.createQuery("SELECT s FROM LoanTypeCondition s WHERE" +
                 "(:education IS NULL OR s.educationGrade = :education)" +
                 "And s.loanType = :loanType " +
@@ -43,6 +42,11 @@ public class LoanTypeConditionRepositoryImpl implements LoanTypeConditionReposit
             return null;
         }
         return resultList.get(0);
+
+     }catch(Exception e){
+        e.printStackTrace();
+        return null;
+    }
     }
 
 
