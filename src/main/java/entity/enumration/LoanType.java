@@ -7,12 +7,11 @@ public enum LoanType {
 
     private final String persianName;
 
-    // Constructor
+
     LoanType(String persianName) {
         this.persianName = persianName;
     }
 
-    // Getter
     public String getPersianName() {
         return persianName;
     }

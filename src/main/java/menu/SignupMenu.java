@@ -43,77 +43,43 @@ public class SignupMenu {
                     2 -> Previous Menu
                     """);
 
-            switch (INPUT.scanner.next()) {
-                case "1":
-                    registerStudent();
-                    break;
-                case "2": {
+            String choice = INPUT.scanner.next();
+            switch (choice) {
+                case "1" -> registerStudent();
+                case "2" -> {
                     break SignupMenu;
                 }
-                default:
-                    System.out.println(MESSAGE.getInvalidInputMessage());
+                default -> System.out.println(MESSAGE.getInvalidInputMessage());
             }
         }
     }
-
-
-
-    public Date convertPersianDateToDate(String persianDateStr)
-    {
-        Pattern persianDatePattern = Pattern.compile("^\\d{4}/\\d{2}/\\d{2}$");
-        if(persianDatePattern.matcher(persianDateStr).matches()){
-        String[] parts = persianDateStr.split("/");
-        int year = Integer.parseInt(parts[0]);
-        int month = Integer.parseInt(parts[1]);
-        int day = Integer.parseInt(parts[2]);
-        JalaliDate jalaliDate = new JalaliDate(year, month, day, 0, 0, 0);
-        Calendar gregorianCalendar = JalaliDateUtil.ShamsyToMilady(jalaliDate);
-        Date gregorianDate = gregorianCalendar.getTime();
-        return gregorianDate;}
-        else
-        {
-            System.out.println("Invalid Persian Date Format");
-            return null;
-        }
-    }
-
-
 
 
     public void registerStudent() {
         try{
         Student student=null;
         do{
-        System.out.println(MESSAGE.getInputMessage("National Code"));
-        String nationalCode= INPUT.scanner.next();
+
+        String nationalCode= COMMON.getInputData("National Code");
         Student studentByNatCode = STUDENT_SERVICE.findStudentByNatCode(nationalCode);
         if(studentByNatCode!=null){
             System.out.println("this student registered before");
             return;
         }
-        System.out.println(MESSAGE.getInputMessage("First Name"));
-        String name = INPUT.scanner.next();
-        System.out.println(MESSAGE.getInputMessage("Last Name"));
-        String lastName = INPUT.scanner.next();
-        System.out.println(MESSAGE.getInputMessage("Father Name"));
-        String fatherName = INPUT.scanner.next();
-        System.out.println(MESSAGE.getInputMessage("Mother Name"));
-        String motherName = INPUT.scanner.next();
-        System.out.println(MESSAGE.getInputMessage("Id Number"));
-        String idNumber= INPUT.scanner.next();
-        System.out.println(MESSAGE.getInputMessage("BirthDate In This Format YYYY/MM/DD For Example 1403/05/28"));
-        String persianBirthDate= INPUT.scanner.next();
-        Date birthDate = convertPersianDateToDate(persianBirthDate);
-        System.out.println(MESSAGE.getInputMessage("studentNumber"));
-        String studentNumber= INPUT.scanner.next();
-        System.out.println(MESSAGE.getInputMessage("University Name"));
-        String universityName= INPUT.scanner.next();
+
+        String name = COMMON.getInputData("First Name");
+        String lastName = COMMON.getInputData("Last Name");
+        String fatherName = COMMON.getInputData("Father Name");
+        String motherName =COMMON.getInputData("Mother Name");
+        String idNumber= COMMON.getInputData("Id Number");
+        String persianBirthDate= COMMON.getInputData("BirthDate In This Format YYYY/MM/DD For Example 1403/05/28");
+        Date birthDate =COMMON.convertStringPersianDateToDate(persianBirthDate);
+        String studentNumber=COMMON.getInputData("studentNumber");
+        String universityName= COMMON.getInputData("University Name");
         UniversityType universityType =COMMON.getEnumChoice(UniversityType.class);
         City residenceCity =COMMON.getEnumChoice(City.class);
-        System.out.println(residenceCity);
-        System.out.println(MESSAGE.getInputMessage("Entry Year In This Format YYYY/MM/DD For Example 1403/05/28"));
-        String persianEntryYear= INPUT.scanner.next();
-        Date entryYear = convertPersianDateToDate(persianEntryYear);
+        String persianEntryYear=COMMON.getInputData("Entry Year In This Format YYYY/MM/DD For Example 1403/05/28");
+        Date entryYear =COMMON.convertStringPersianDateToDate(persianEntryYear);
         EducationGrade educationGrade=COMMON.getEnumChoice(EducationGrade.class);
         MaritalStatus maritalStatus=COMMON.getEnumChoice(MaritalStatus.class);
         System.out.println("Are You Dormitory Resident ");
@@ -146,8 +112,7 @@ public class SignupMenu {
         if (student != null) {
             System.out.println("Student is registered successfully.");
         } else {
-            System.out.println("Registration failed");
-            System.out.println("Please correct the errors and try again.");
+            System.out.println("Registration failed Please correct the errors and try again.");
         }
     } while (student == null);
         }catch (Exception e){

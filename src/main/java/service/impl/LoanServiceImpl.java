@@ -65,22 +65,22 @@ public class LoanServiceImpl implements LoanService {
     public boolean checkRequestDateIsValid(LoanType loanType, Student student) {
         try {
 
-            // تاریخ‌های شروع و پایان دوره‌های ثبت ‌نام
+            //date of start and end registration
             Calendar cal = Calendar.getInstance();
             int currentYear = cal.get(Calendar.YEAR);
-            // دوره اول: 1 آبان تا 8 آبان
-            cal.set(currentYear, Calendar.AUGUST, 22, 0, 0, 0); // 1 آبان (ماه‌ها از 0 شروع می‌شوند)
+            // first period 1 aban to 8 aban
+            cal.set(currentYear, Calendar.AUGUST, 22, 0, 0, 0); // 1 آبان
             Date startPeriod1 = cal.getTime();
             cal.set(currentYear, Calendar.SEPTEMBER, 29, 23, 59, 59); // 8 آبان
             Date endPeriod1 = cal.getTime();
 
-            // دوره دوم: 25 بهمن تا 2 اسفند
+            //second period 25 bahman to 2 esfand
             cal.set(currentYear, Calendar.FEBRUARY, 14, 0, 0, 0); // 25 بهمن
             Date startPeriod2 = cal.getTime();
             cal.set(currentYear, Calendar.FEBRUARY, 21, 23, 59, 59); // 2 اسفند
             Date endPeriod2 = cal.getTime();
 
-            // تاریخ جاری سیستم
+            // current date
             Date currentDateTime = new Date();
 
 
@@ -141,12 +141,13 @@ public class LoanServiceImpl implements LoanService {
 
 
             if (checkRequestDateIsValid(loanTypeCondition.getLoanType(), student)) {
+                String loanAmountt = String.format("%.0f", loanTypeCondition.getAmount());
                 if (loanTypeCondition != null) {
                     System.out.println("""
                             تسهیلاتی انتخابی شما به مبلغ %s می باشدآیا مایل به دریافت این تسهیلات می باشید؟
                             1 .تایید
                             2 .انصراف
-                            """.formatted(loanTypeCondition.getAmount()));
+                            """.formatted(loanAmountt));
                     return INPUT.scanner.nextInt();
                 } else {
                     System.out.println("وام درخواستی در حال حاضر در سیستم تعریف نشده است.");
@@ -198,6 +199,7 @@ public class LoanServiceImpl implements LoanService {
         double monthlyInterestRate = (4.0 / 100) / 12;
         double initialInstallment = (loanAmount * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, 60))
                 / (Math.pow(1 + monthlyInterestRate, 60) - 1);
+        initialInstallment = Math.round(initialInstallment * 10.0) / 10.0;
         int count = 0;
         JalaliDate installmentStartDate = JalaliDateUtil.MiladyToShamsy(startDate);
         int year_ = installmentStartDate.Year;
@@ -288,26 +290,26 @@ public class LoanServiceImpl implements LoanService {
     }
 
     public Boolean checkIsOpenRegisterDate() {
-        // تاریخ‌های شروع و پایان دوره‌های ثبت ‌نام
+    //date of start and end registration
         Calendar cal = Calendar.getInstance();
         int currentYear = cal.get(Calendar.YEAR);
-        // دوره اول: 1 آبان تا 8 آبان
+        // first period 1 aban to 8 aban
         cal.set(currentYear, Calendar.AUGUST, 22, 0, 0, 0); // 1 آبان (ماه‌ها از 0 شروع می‌شوند)
         Date startPeriod1 = cal.getTime();
         cal.set(currentYear, Calendar.SEPTEMBER, 29, 23, 59, 59); // 8 آبان
         Date endPeriod1 = cal.getTime();
 
-        // دوره دوم: 25 بهمن تا 2 اسفند
+        //second period 25 bahman to 2 esfand
         cal.set(currentYear, Calendar.FEBRUARY, 14, 0, 0, 0); // 25 بهمن
         Date startPeriod2 = cal.getTime();
         cal.set(currentYear, Calendar.FEBRUARY, 21, 23, 59, 59); // 2 اسفند
         Date endPeriod2 = cal.getTime();
 
-        // تاریخ جاری سیستم
+        // current date
         Date currentDateTime = new Date();
 
 
-        // چک کردن تاریخ جاری با دوره‌های ثبت‌نام
+        // check current date with registration's period
         if ((currentDateTime.after(startPeriod1) && currentDateTime.before(endPeriod1)) ||
                 (currentDateTime.after(startPeriod2) && currentDateTime.before(endPeriod2))) {
             return true;

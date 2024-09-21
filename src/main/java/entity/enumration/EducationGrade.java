@@ -12,12 +12,12 @@ public enum EducationGrade {
 
     private final String persianName;
 
-    // Constructor
+
     EducationGrade(String persianName) {
         this.persianName = persianName;
     }
 
-    // Getter
+
     public String getPersianName() {
         return persianName;
     }

@@ -44,13 +44,13 @@ public class StudentServiceImpl implements StudentService {
 
         try {
             Student student = studentMapper.toEntity(param);
-            if (!studentRepository.existsByNationalCode(param.nationalCode())) {
+           // if (!studentRepository.existsByNationalCode(param.nationalCode())) {
                 return studentRepository.registerStudent(student);
 
-            } else {
-                System.out.println("Student with the same national code already exists.");
-                return null;
-            }
+//            } else {
+//                System.out.println("Student with the same national code already exists.");
+//                return null;
+//            }
 
         } catch (Exception e) {
             System.out.println("An error occurred while registering the student: " + e.getMessage());
@@ -117,23 +117,5 @@ public class StudentServiceImpl implements StudentService {
         return studentRepository.findStudentByNatCode(natCode);
     }
 }
-//    @Override
-//    public String generatePassword() {
-//        String upperCaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-//        String lowerCaseChars = "abcdefghijklmnopqrstuvwxyz";
-//        String digitChars = "0123456789";
-//        String specialChars = "@#$%&";
-//        String allTypeOfChars = upperCaseChars + lowerCaseChars + digitChars + specialChars;
-//        StringBuilder complexPass = new StringBuilder();
-//        Random random = new Random();
-//        complexPass.append(upperCaseChars.charAt(random.nextInt(upperCaseChars.length())));
-//        complexPass.append(lowerCaseChars.charAt(random.nextInt(lowerCaseChars.length())));
-//        complexPass.append(digitChars.charAt(random.nextInt(digitChars.length())));
-//        complexPass.append(specialChars.charAt(random.nextInt(specialChars.length())));
-//        for (int i = 0; i < 4; i++) {
-//            complexPass.append(allTypeOfChars.charAt(random.nextInt(allTypeOfChars.length())));
-//        }
-//
-//        return complexPass.toString();
-//    }
+
 

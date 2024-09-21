@@ -13,6 +13,7 @@ import menu.util.Message;
 import service.*;
 import util.Common;
 import util.UserSession;
+
 import java.util.Date;
 import java.util.List;
 
@@ -23,10 +24,9 @@ public class RegisterLoanMenu {
     private final LoanTypeConditionService LOAN_TYPE_CONDITION_SERVICE;
     private final StudentService STUDENT_SERVICE;
     private final Common COMMON;
-    private final LoanService  LOAN_SERVICE;
+    private final LoanService LOAN_SERVICE;
     private final CardService CARD_SERVICE;
     private final CardMapper cardMapper;
-
 
 
     public RegisterLoanMenu(Input input, Message message, UserSession userSession, LoanTypeConditionService loanTypeConditionService, StudentService studentService, Common common, LoanService loanService, CardService cardService, CardMapper cardMapper) {
@@ -45,171 +45,163 @@ public class RegisterLoanMenu {
         Student student = STUDENT_SERVICE.findStudentById(USER_SESSION.getTokenId());
         Date startDate = LOAN_SERVICE.calcInstallmentStartDate(student);
         Date currentDateTime = new Date();
-        if(LOAN_SERVICE.checkIsOpenRegisterDate()) {
-            if (currentDateTime.before(startDate)) {
-                RegisterLoanMenu:
-                while (true) {
-                    System.out.println("""
-                            Enter one of the following options:
-                            1 ->Tuition loan
-                            2 ->Education loan
-                            3 ->Housing Loan
-                            4 ->Previous
-                            """);
 
-                    switch (INPUT.scanner.next()) {
-
-                        case "1":
-
-                            LoanTypeCondition tuitionFeeLoan = LOAN_TYPE_CONDITION_SERVICE
-                                    .findByEducationandLoanType(USER_SESSION.getEducationGrade(), LoanType.TUITION_FEE_LOAN, null);
-                            if (LOAN_SERVICE.getCheckLoanCondition(tuitionFeeLoan) == 1)
-                                registerLoan(tuitionFeeLoan);
-                            break;
-                        case "2":
-
-                            LoanTypeCondition educationLoan =
-                                    LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(USER_SESSION.getEducationGrade(),
-                                            LoanType.EDUCATION_LOAN, null);
-                            if (LOAN_SERVICE.getCheckLoanCondition(educationLoan) == 1)
-                                registerLoan(educationLoan);
-                            break;
-                        case "3":
-                            LoanTypeCondition housingLoan =
-                                    LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(null, LoanType.HOUSING_LOAN, USER_SESSION.getCity());
-                            if (LOAN_SERVICE.getCheckLoanCondition(housingLoan) == 1)
-                                registerLoan(housingLoan);
-                            break;
-                        case "4":
-                            break RegisterLoanMenu;
-
-                        default:
-                            System.out.println(MESSAGE.getInvalidInputMessage());
-                    }
-
-                }
-            } else {
-
-                System.out.println("شما فارغ تحصیل شده اید و امکان ثبت نام در وام های دانشجویی را ندارید");
-            }
-        }
-        else{
+        if (!LOAN_SERVICE.checkIsOpenRegisterDate()) {
             System.out.println("در حال حاضر پنجره ثبت‌ نام وام بسته است.");
+            return;
+        }
+
+        if (!currentDateTime.before(startDate)) {
+            System.out.println("شما فارغ تحصیل شده اید و امکان ثبت نام در وام های دانشجویی را ندارید");
+            return;
+        }
+
+        while (true) {
+            displayLoanMenu();
+            String input = INPUT.scanner.next();
+
+            if (!processLoanInput(input)) {
+                System.out.println(MESSAGE.getInvalidInputMessage());
+            } else if (input.equals("4")) {
+                break;
+            }
         }
     }
 
-   public void registerLoan(LoanTypeCondition loanType) {
+    private void displayLoanMenu() {
+        System.out.println("""
+        Enter one of the following options:
+        1 -> Tuition loan
+        2 -> Education loan
+        3 -> Housing loan
+        4 -> Previous
+    """);
+    }
 
-       try{
-       SpouseDto spouseDTO = null;
-       String address = null;
-       String contractNumber = null;
+    private boolean processLoanInput(String input) {
+        LoanTypeCondition loanCondition = null;
 
-       if (loanType.getLoanType() == LoanType.HOUSING_LOAN) {
+        switch (input) {
+            case "1":
+                loanCondition = LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(
+                        USER_SESSION.getEducationGrade(), LoanType.TUITION_FEE_LOAN, null);
+                break;
+            case "2":
+                loanCondition = LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(
+                        USER_SESSION.getEducationGrade(), LoanType.EDUCATION_LOAN, null);
+                break;
+            case "3":
+                loanCondition = LOAN_TYPE_CONDITION_SERVICE.findByEducationandLoanType(
+                        null, LoanType.HOUSING_LOAN, USER_SESSION.getCity());
+                break;
+            case "4":
+                return true;
+            default:
+                return false;
+        }
 
-           System.out.println("Please insert spouse data for loan registration:");
+        if (loanCondition != null && LOAN_SERVICE.getCheckLoanCondition(loanCondition) == 1) {
+            registerLoan(loanCondition);
+        }
+        return true;
+    }
+    public void registerLoan(LoanTypeCondition loanType) {
+        try {
+            SpouseDto spouseDto = null;
+            String address = null;
+            String contractNumber = null;
 
-           // Get spouse data
-           System.out.println(MESSAGE.getInputMessage("Spouse National Code"));
-           String nationalCode = INPUT.scanner.next();
-           if(!LOAN_SERVICE.checkSpouseLoan(nationalCode)){
-               return;
-           }
+            if (loanType.getLoanType() == LoanType.HOUSING_LOAN) {
+                spouseDto = getSpouseData();
+                if (spouseDto == null) {
+                    return;
+                }
+                address =COMMON.getInputData("Your Address");
+                contractNumber =COMMON.getInputData("Your Contract Number");
+            }
 
-           System.out.println(MESSAGE.getInputMessage("Spouse First Name"));
-           String name = INPUT.scanner.next();
-           System.out.println(MESSAGE.getInputMessage("Spouse Last Name"));
-           String lastName = INPUT.scanner.next();
+            CardDtoWithId cardDto = getCard();
 
-           spouseDTO = new SpouseDto(name, lastName, nationalCode);
+            LoanRegistrationDto loanRegistrationDto = new LoanRegistrationDto(
+                    loanType, spouseDto, cardDto, address, contractNumber
+            );
 
-           System.out.println(MESSAGE.getInputMessage("Your Address"));
-           address = INPUT.scanner.next();
-           System.out.println(MESSAGE.getInputMessage("Your Contract Number"));
-           contractNumber = INPUT.scanner.next();
-       }
+            if (LOAN_SERVICE.registerLoan(loanRegistrationDto)) {
+                System.out.println("Loan registered successfully.");
+            } else {
+                System.out.println("Loan registration failed.");
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Validation failed: " + e.getMessage());
+        }
+    }
 
-       // Get card data
+    private SpouseDto getSpouseData() {
+        System.out.println("Please insert spouse data for loan registration:");
 
-       CardDtoWithId cardDTO=getCard();
+        String nationalCode =COMMON.getInputData("Spouse National Code");
+        if (!LOAN_SERVICE.checkSpouseLoan(nationalCode)) {
+            return null;
+        }
 
-       LoanRegistrationDto loanRegistrationDTO = new LoanRegistrationDto(
-               loanType, spouseDTO, cardDTO, address, contractNumber
-       );
+        String firstName =COMMON.getInputData("Spouse First Name");
+        String lastName =COMMON.getInputData("Spouse Last Name");
 
-       // Register loan and set installments
-
-           if(LOAN_SERVICE.registerLoan(loanRegistrationDTO)){
-               System.out.println("Loan registered successfully.");
-           }
-           else {
-               System.out.println("Loan register failed");
-           }}
-       catch (IllegalArgumentException e) {
-           System.out.println("Validation failed: " + e.getMessage());
-       }
+        return new SpouseDto(firstName, lastName, nationalCode);
+    }
 
 
-   }
 
-   public CardDtoWithId getCard(){
+    public CardDtoWithId getCard() {
+        List<Card> cards = CARD_SERVICE.selectAllStudentCard(USER_SESSION.getTokenId());
+        if (!cards.isEmpty() ) {
+        System.out.println("شماره کارت هایی که در ارتباط با تسهیلات دیگر در سیستم ثبت شده است. آیا مایل به انتخاب از میان آن ها می باشید؟");
+        System.out.println("1. Yes");
+        System.out.println("2. No");
+        int selection=INPUT.scanner.nextInt();
+            if(selection==1){
+            return selectExistingCard(cards);}
+        }
 
-       List<Card> cards = CARD_SERVICE.selectAllStudentCard(USER_SESSION.getTokenId());
-       if(cards!=null && cards.size()!=0) {
-           System.out.println("شماره کارت هایی که در ارتباط با تسهیلات دیگر " +
-                   "در سیستم ثبت شده است آیا مایل به انتخاب از میان آن ها می باشید؟");
-           System.out.println("1.Yes");
-           System.out.println("2.No");
-           int choice = INPUT.scanner.nextInt();
-           if (choice == 1) {
-               System.out.println("Select a Bank Card number:");
-               for (Card card : cards) {
-                   System.out.println(card.getId() + "----> " + card.getCardNumber());
+        System.out.println("کارت باید متعلق به یکی از بانک های زیر باشد لطفا بانک مورد نظر خود را انتخاب کنید:");
+        Bank bank = COMMON.getEnumChoice(Bank.class);
+        String cardNumber = getValidCardNumber(bank);
+        String expireDate =COMMON.getInputData("Expire Date (format: YY/MM)");
+        int cvv2 =COMMON.getValidCvv2();
+        return new CardDtoWithId(null, expireDate, cardNumber, cvv2, bank);
+    }
 
-               }
-               int selectedCard = INPUT.scanner.nextInt();
-               for (Card card : cards) {
-                   if (card.getId() == selectedCard) {
-                       CardDtoWithId cardDto = cardMapper.toDTOId(card);
-                       return cardDto;
-                   }
-               }
-           }
-       }
 
-       System.out.println("کارت باید متعلق به یکی از بانک های زیر باشد لطفا بانک مورد نظر خود را انتخاب کنید");
-       Bank bank = COMMON.getEnumChoice(Bank.class);
-       String cardNumber;
+    private CardDtoWithId selectExistingCard(List<Card> cards) {
+        System.out.println("Select a Bank Card number:");
+        cards.forEach(card -> System.out.println(card.getId() + " ----> " + card.getCardNumber()));
 
-       while (true) {
-           System.out.println(MESSAGE.getInputMessage("Card Number"));
-           cardNumber = INPUT.scanner.next();
-           if (cardNumber.startsWith(bank.getPreNumber())) {
-               break;
-           } else {
-               System.out.println("شماره کارت بانک " + bank.getBankName() + " باید با " + bank.getPreNumber() + " شروع شود.");
-               System.out.println("لطفا شماره کارت صحیح را وارد کنید.");
-           }
-       }
-       System.out.println(MESSAGE.getInputMessage("Expire Date (format: YY/MM)"));
-       String expireDate = INPUT.scanner.next();
-       int cvv2 = 0;
-       boolean validInput = false;
+        int selectedCardId = INPUT.scanner.nextInt();
+        return cards.stream()
+                .filter(card -> card.getId() == selectedCardId)
+                .map(card -> cardMapper.toDTOId(card))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Invalid card selection."));
+    }
 
-       while (!validInput) {
-           System.out.println(MESSAGE.getInputMessage("CVV2"));
-           if (INPUT.scanner.hasNextInt()) {
-               cvv2 = INPUT.scanner.nextInt();
-               validInput = true;
-           } else {
-               System.out.println("Invalid input! Please enter a numeric value for CVV2.");
-               INPUT.scanner.next();
-           }
-       }
+    private String getValidCardNumber(Bank bank) {
+        String cardNumber;
 
-       CardDtoWithId cardDTO = new CardDtoWithId(null,expireDate,cardNumber,cvv2,bank);
-       return cardDTO;
-   }
+        while (true) {
+            cardNumber =COMMON.getInputData("Card Number");
+            if (cardNumber.startsWith(bank.getPreNumber())) {
+                break;
+            } else {
+                System.out.println("شماره کارت بانک " + bank.getBankName() + " باید با " + bank.getPreNumber() + " شروع شود.");
+                System.out.println("لطفا شماره کارت صحیح را وارد کنید.");
+            }
+        }
+
+        return cardNumber;
+    }
+
+
+
 
 }
 

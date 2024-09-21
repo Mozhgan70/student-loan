@@ -6,7 +6,6 @@ import org.mapstruct.Mapper;
 
 @Mapper
 public interface StudentMapper {
-    //StudentMapper INSTANCE = Mappers.getMapper(StudentMapper.class);
 
     RegisterStudentDto toDTO(Student student);
 

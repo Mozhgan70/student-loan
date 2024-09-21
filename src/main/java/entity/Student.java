@@ -22,7 +22,6 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @SuperBuilder
 public class Student {
 

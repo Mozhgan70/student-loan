@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -53,7 +54,7 @@ public class LoanTypeCondition {
     private Date endDate;
 
     @OneToMany(mappedBy = "loanType",cascade = CascadeType.ALL)
-    private Set<Loan> loan;
+    private Set<Loan> loan=new HashSet<>();
 
 
 }

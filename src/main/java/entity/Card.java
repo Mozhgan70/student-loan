@@ -20,8 +20,6 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-
     @Column(name="expire_date")
     private String expireDate;
 
@@ -43,6 +41,13 @@ public class Card {
 
     @PrePersist
     protected void onCreate() {
+        if (balance == null) {
+            balance = 100000000.0;
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
         if (balance == null) {
             balance = 100000000.0;
         }

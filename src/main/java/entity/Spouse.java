@@ -12,7 +12,6 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @SuperBuilder
 public class Spouse {
     @Id
@@ -25,7 +24,7 @@ public class Spouse {
     @Column(name="last_name")
     private String lastName;
 
-    @Column(name="nationalCode")
+    @Column(name="nationalCode",unique = true)
     private String nationalCode;
 
     @Column(name="is_student")
